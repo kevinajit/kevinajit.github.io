@@ -1,40 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title>UniSim Documentation</title>
-        <link rel="stylesheet" type="text/css" href="./index.css">
-    </head>
-    <body>
-        <div id="title-container">
-            <div id="title">
-                ENG1 Team 5 Website
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniSim Documentation</title>
+    <link rel="stylesheet" type="text/css" href="./index.css">
+    <style>
+        body {
+            font-family: "Courier New", Courier, monospace;
+            margin: 0;
+            padding: 0;
+            background-color: #EDE7F2; /* Light purple to complement the screenshot */
+            color: #333;
+        }
+        #title-container {
+            background-color: #8C72A6; /* Purple from the screenshot interface */
+            padding: 20px;
+            text-align: center;
+            color: white;
+            /* Removed border-radius for a cleaner look */
+        }
+        #title {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 0;
+        }
+        #header-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 15px;
+            background-color: #ffffff; /* White for contrast */
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            /* Removed border-radius and margin so it doesn't look like a separate box */
+        }
+        .header-item {
+            position: relative;
+            font-size: 1em;
+        }
+        .header-item a {
+            text-decoration: none;
+            color: #3DAA44; /* Green to reflect greenery in the screenshot */
+            font-weight: bold;
+        }
+        .dropdown {
+            cursor: pointer;
+            color: #3DAA44;
+        }
+        /* Show dropdown-content on hover */
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #ffffff;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .dropdown-content a {
+            display: block;
+            padding: 5px 10px;
+            color: #3DAA44;
+        }
+        .dropdown-content a:hover {
+            background-color: #F2EDF7; /* Subtler, lighter highlight */
+            border-radius: 5px;
+        }
+
+        /* Centering the image */
+        #image-container {
+            display: flex;
+            justify-content: left;
+            margin: 20px 120px;
+        }
+
+        #gameplay-image {
+            /* Removed border-radius and box-shadow so it looks like a clean, natural image */
+            width: 800px;
+            height: 650px;
+        }
+        
+        p {
+            margin: 0;
+            padding: 0;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="title-container">
+        <div id="title">Team 5</div>
+    </div>
+    <div id="header-container">
+        <div class="header-item"><a href="https://github.com/lsk-520/Team5-A2">GitHub Repository</a></div>
+        <div class="header-item dropdown">
+            <p>Assessment 1</p>
+            <div class="dropdown-content">
+                <a href="weekly-plans.html">Weekly Plans</a>
+                <a href="./deliverables/Req1.pdf" download="Req1.pdf">Requirements</a>
+                <a href="architecture.html">Architecture</a>
+                <a href="./deliverables/Plan1.pdf" download="Plan1.pdf">Method Selection & Planning</a>
+                <a href="./deliverables/Risk1.pdf" download="Risk1.pdf">Risk Assessment & Mitigation</a>
+                <a href="./deliverables/Impl1.pdf" download="Impl1.pdf">Implementation</a>
             </div>
         </div>
-        <div id="header-container">
-            <div class="header-item"><p><a href="https://github.com/lsk-520/Team5-A2">GitHub Repo</a></p></div>
-            <div class="header-item dropdown">
-                <p class="dropdown-item">Assessment 1</p>
-                <div class="dropdown-content">
-                    <a href="weekly-plans.html">Weekly Plans</a>
-                    <a href="./deliverables/Req1.pdf" download="Req1.pdf">Requirements</a>
-                    <a href="architecture.html">Architecture</a>
-                    <a href="./deliverables/Plan1.pdf" download="Plan1.pdf">Method Selection & Planning</a>
-                    <a href="./deliverables/Risk1.pdf" download="Risk1.pdf">Risk Assessment & Mitigation</a>
-                    <a href="./deliverables/Impl1.pdf" download="Impl1.pdf">Implementation</a>
-                </div>
+        <div class="header-item dropdown">
+            <p>Assessment 2</p>
+            <div class="dropdown-content">
+                <a href="./deliverables/Change2.pdf" download="Change2.pdf">Change Report</a>
+                <a href="./deliverables/Impl2.pdf" download="Impl2.pdf">Implementation</a>
+                <a href="./deliverables/Test2.pdf" download="Test2.pdf">Testing</a>
+                <a href="./deliverables/Eval2.pdf" download="Eval2.pdf">User Evaluation</a>
+                <a href="./deliverables/CI2.pdf" download="CI2.pdf">Continuous Integration</a>
             </div>
-            <div class="header-item dropdown">
-                <p class="dropdown-item">Assessment 2</p>
-                <div class="dropdown-content">
-                    <a href="./deliverables/Change2.pdf" download="Change2.pdf">Change report</a>
-                    <a href="./deliverables/Impl2.pdf" download="Impl2.pdf">Implementation</a>
-                    <a href="./deliverables/Test2.pdf" download="Test2.pdf">Testing</a>
-                    <a href="./deliverables/Eval2.pdf" download="Eval.pdf">User Evaluation</a>
-                    <a href="./deliverables/CI2.pdf" download="CI2.pdf">Continuous Integration</a>
-                </div>
-            </div>
-            <div class="header-item"><p><a href="UniSim-1.0.0.jar" download="UniSim-1.0.0.jar">Download</a></p></div>
         </div>
-        <img id="gameplay-image" src="UniSim Screenshot.png" width="500" height="650"/>
-    </body>
+        <div class="header-item"><a href="UniSim-1.0.0.jar" download="UniSim-1.0.0.jar">Download</a></div>
+    </div>
+
+    <div id="image-container">
+        <img id="gameplay-image" src="UniSim Screenshot.png" alt="Gameplay Screenshot"/>
+    </div>
+</body>
 </html>
