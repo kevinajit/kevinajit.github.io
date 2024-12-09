@@ -1,96 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
     <title>UniSim Documentation</title>
-    <link rel="stylesheet" type="text/css" href="./index.css">
+
     <style>
         body {
             font-family: "Courier New", Courier, monospace;
             margin: 0;
             padding: 0;
-            background-color: #EDE7F2; /* Light purple to complement the screenshot */
+            background-color: #EDE7F2;
             color: #333;
+            overflow-x: hidden; /* Prevent horizontal scroll if flakes drift off screen */
         }
+
         #title-container {
-            background-color: #8C72A6; /* Purple from the screenshot interface */
+            background-color: #8C72A6;
             padding: 20px;
             text-align: center;
             color: white;
         }
+
         #title {
             font-size: 2em;
             font-weight: bold;
             margin: 0;
         }
+
         #header-container {
             display: flex;
             justify-content: center;
-            gap: 40px;
+            gap: 20px;
             padding: 15px;
             background-color: #ffffff;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         .header-item {
             position: relative;
             font-size: 1em;
         }
+
         .header-item a {
             text-decoration: none;
-            color: #3DAA44; /* Green to reflect greenery in the screenshot */
+            color: #3DAA44;
             font-weight: bold;
         }
+
         .dropdown {
             cursor: pointer;
             color: #3DAA44;
         }
+
         .dropdown:hover .dropdown-content {
             display: block;
         }
+
         .dropdown-content {
             display: none;
             position: absolute;
             background-color: #ffffff;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
             z-index: 1;
             padding: 10px;
             border-radius: 10px;
         }
+
         .dropdown-content a {
             display: block;
             padding: 5px 10px;
             color: #3DAA44;
         }
+
         .dropdown-content a:hover {
-            background-color: #F2EDF7; /* Subtler, lighter highlight */
+            background-color: #F2EDF7;
             border-radius: 5px;
         }
 
         #image-container {
             display: flex;
-            justify-content: left;
-            margin: 20px 120px;
+            justify-content: center;
+            margin: 20px 0;
         }
 
         #gameplay-image {
-            width: 800px;
-            height: 650px;
-        }
-        
-        p {
-            margin: 0;
-            padding: 0;
+            width: 500px;
+            height: auto;
         }
 
+        /* Snowflake styles */
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            color: #FFF;
+            font-size: 1em;
+            opacity: 0.9;
+            pointer-events: none;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10px); }
+            100% { transform: translateY(100vh); }
+        }
     </style>
 </head>
 <body>
     <div id="title-container">
-        <div id="title">Team 5</div>
+        <div id="title">ENG1 Team 5 Website</div>
     </div>
     <div id="header-container">
-        <div class="header-item"><a href="https://github.com/lsk-520/Team5-A2">GitHub Repository</a></div>
+        <div class="header-item"><a href="https://github.com/lsk-520/Team5-A2">GitHub Repo</a></div>
         <div class="header-item dropdown">
             <p>Assessment 1</p>
             <div class="dropdown-content">
@@ -110,7 +132,6 @@
                 <a href="./deliverables/Test2.pdf" download="Test2.pdf">Testing</a>
                 <a href="./deliverables/Eval2.pdf" download="Eval2.pdf">User Evaluation</a>
                 <a href="./deliverables/CI2.pdf" download="CI2.pdf">Continuous Integration</a>
-                <a href="https://github.com/lsk-520/Team5-2/actions">Coverage Report</a> <!-- Updated to GitHub Actions -->
             </div>
         </div>
         <div class="header-item"><a href="UniSim-1.0.0.jar" download="UniSim-1.0.0.jar">Download</a></div>
@@ -119,5 +140,36 @@
     <div id="image-container">
         <img id="gameplay-image" src="UniSim Screenshot.png" alt="Gameplay Screenshot"/>
     </div>
+
+    <script>
+        // Simple snow falling effect
+        const NUM_SNOWFLAKES = 50; // Adjust number of snowflakes
+        const FALL_DURATION_MIN = 5; // min seconds
+        const FALL_DURATION_MAX = 10; // max seconds
+
+        for (let i = 0; i < NUM_SNOWFLAKES; i++) {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.textContent = '❄'; // Snowflake character
+
+            // Random horizontal start
+            const startX = Math.random() * window.innerWidth;
+            snowflake.style.left = `${startX}px`;
+
+            // Random size
+            const size = Math.random() * 1.5 + 0.5; 
+            snowflake.style.fontSize = `${size}em`;
+
+            // Random fall duration
+            const duration = Math.random() * (FALL_DURATION_MAX - FALL_DURATION_MIN) + FALL_DURATION_MIN;
+            snowflake.style.animationDuration = `${duration}s`;
+
+            // Slight horizontal drift
+            const drift = (Math.random() - 0.5) * 50;
+            snowflake.style.transform = `translateX(${drift}px)`;
+
+            document.body.appendChild(snowflake);
+        }
+    </script>
 </body>
 </html>
