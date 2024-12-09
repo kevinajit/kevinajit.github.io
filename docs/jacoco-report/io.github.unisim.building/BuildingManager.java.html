@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BuildingManager.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">io.github.unisim.building</a> &gt; <span class="el_source">BuildingManager.java</span></div><h1>BuildingManager.java</h1><pre class="source lang-java linenums">package io.github.unisim.building;
+
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector3;
+import io.github.unisim.GameState;
+import io.github.unisim.Point;
+import io.github.unisim.event.Event;
+import io.github.unisim.world.World;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Manage the buildings placed in the world and methods common to all buildings.
+ */
+public class BuildingManager {
+  // create a list of buildings which will be sorted by a height metric derived from
+  // the locations of the corners of the buildings.
+<span class="nc" id="L24">  private ArrayList&lt;Building&gt; buildings = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L25">  private Map&lt;BuildingType, Integer&gt; buildingCounts = new HashMap&lt;&gt;();</span>
+  private Matrix4 isoTransform;
+  private Building previewBuilding;
+  private World world;
+
+<span class="nc" id="L30">  public BuildingManager(Matrix4 isoTransform, World world) {</span>
+<span class="nc" id="L31">    this.isoTransform = isoTransform;</span>
+<span class="nc" id="L32">    this.world = world;</span>
+<span class="nc" id="L33">  }</span>
+
+  /**
+   * Determines if a region on the map is composed solely of buildable tiles.
+
+   * @param btmLeft - The co-ordinates of the bottom left corner of the search region
+   * @param topRight - The co-ordinates of the top right corner of the search region
+   * @param tileLayer - A reference to the map layer containing all terrain tiles
+   * @return - true if the region is made solely of buildable tiles, false otherwise
+   */
+  public boolean isBuildable(Point btmLeft, Point topRight, TiledMapTileLayer tileLayer) {
+<span class="nc" id="L44">    boolean buildable = true;</span>
+    // we iterate over each tile within the search region and check
+    // for any non-buildable tiles.
+    // additionally, we return false every time if the game is paused
+    // (buildings may not be placed while the game is paused).
+<span class="nc bnc" id="L49" title="All 4 branches missed.">    for (int x = btmLeft.x; x &lt;= topRight.x &amp;&amp; buildable; x++) {</span>
+<span class="nc bnc" id="L50" title="All 4 branches missed.">        for (int y = btmLeft.y; y &lt;= topRight.y &amp;&amp; buildable; y++) {</span>
+<span class="nc" id="L51">            Cell currentCell = tileLayer.getCell(x, y);</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">            if (currentCell == null) {</span>
+<span class="nc" id="L53">                buildable = false;</span>
+<span class="nc" id="L54">                continue;</span>
+            }
+
+<span class="nc" id="L57">            TiledMapTile currentTile = currentCell.getTile();</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">            if (!tileBuildable(currentTile)) {</span>
+<span class="nc" id="L59">                buildable = false;</span>
+            }
+        }
+    }
+<span class="nc bnc" id="L63" title="All 4 branches missed.">    if (!buildable || GameState.paused) {</span>
+<span class="nc" id="L64">      return false;</span>
+    }
+
+    // Next, iterate over the current buildings to see if any intersect the new building
+<span class="nc bnc" id="L68" title="All 2 branches missed.">    for (Building building : buildings) {</span>
+      // Use the seperating axis theorem to detect building overlap
+<span class="nc bnc" id="L70" title="All 8 branches missed.">      if (!(building.location.x &gt; topRight.x</span>
+          || building.location.x + building.size.x - 1 &lt; btmLeft.x
+          || building.location.y &gt; topRight.y
+          || building.location.y + building.size.y - 1 &lt; btmLeft.y)
+      ) {
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        if (building == previewBuilding) {</span>
+<span class="nc" id="L76">          continue;</span>
+        }
+<span class="nc" id="L78">        buildable = false;</span>
+<span class="nc" id="L79">        break;</span>
+      }
+<span class="nc" id="L81">    }</span>
+
+<span class="nc" id="L83">    return buildable;</span>
+  }
+
+  /**
+   * Helper method that determines if the provided tile may be built on.
+
+   * @param tile - A reference to a tile on the terrain layer of the map.
+   * @return - true if the tile is buildable, false otherwise
+   */
+  private static boolean tileBuildable(TiledMapTile tile) {
+<span class="nc" id="L93">    return GameState.buildableTiles.contains(tile.getId());</span>
+  }
+
+  /**
+   * Draws each building from the building list onto the map.
+
+   * @param batch - the SpriteBatch in which to draw
+   */
+  public void render(SpriteBatch batch) {
+<span class="nc bnc" id="L102" title="All 2 branches missed.">    for (Building building : buildings) {</span>
+<span class="nc" id="L103">      drawBuilding(building, batch);</span>
+<span class="nc" id="L104">    }</span>
+<span class="nc" id="L105">  }</span>
+
+//  public boolean buildingTypeExists(BuildingType buildingType) {
+//      if (buildingCounts.containsKey(buildingType) &amp;&amp; buildingCounts.get(buildingType) &gt; 0) {
+//          return true;
+//      }
+//      return false;
+//  }
+
+  /**
+   * Handle placement of a building into the world by determining
+   * the correct draw order and updating the building counters.
+
+   * @param building - A reference to a building object to be placed
+   * @return - The location in the buildings array that the building was placed at
+   */
+  public int placeBuilding(Building building) {
+    // Insert the building into the correct place in the arrayList to ensure it
+    // gets rendered in top-down order
+    // Start by calculating the 'height' values for the left and right corners of the new building
+    // where height is the taxi-cab distance from the top of the map
+<span class="nc" id="L126">    int buildingHeightLeftSide = building.location.y - building.location.x;</span>
+<span class="nc" id="L127">    int buildingHeightRightSide = buildingHeightLeftSide + building.size.y - building.size.x + 1;</span>
+<span class="nc" id="L128">    Point leftCorner = building.location;</span>
+
+    // Move up the array, until the pointer is in the correct place for the new building so the
+    // array is sorted by height
+<span class="nc" id="L132">    int i = 0;</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">    while (i &lt; buildings.size()) {</span>
+<span class="nc" id="L134">      Building other = buildings.get(i);</span>
+<span class="nc" id="L135">      int otherHeightLeftSide = other.location.y - other.location.x;</span>
+      // Calculate the taxi-cab distance between the new building's left corner and the other
+      // building's right corner
+<span class="nc" id="L138">      int leftDistance = Math.abs(leftCorner.x - other.location.x - other.size.x + 1)</span>
+<span class="nc" id="L139">          + Math.abs(leftCorner.y - other.location.y - other.size.y + 1);</span>
+      // If the distance is small, compare the height of the new buildin'g left corner to the
+      // height of the other buildings right corner
+<span class="nc bnc" id="L142" title="All 2 branches missed.">      if (leftDistance &lt; Math.min(building.size.x + building.size.y, other.size.x + other.size.y)) {</span>
+<span class="nc" id="L143">        int otherHeightRightSide = otherHeightLeftSide + other.size.y - other.size.x + 1;</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">        if (otherHeightRightSide &gt; buildingHeightLeftSide) {</span>
+<span class="nc" id="L145">          i++;</span>
+<span class="nc" id="L146">          continue;</span>
+        } else {
+          break;
+        }
+      }
+      // Otherwise, compare the distance of the new building's right corner to the other building's
+      // left corner
+<span class="nc bnc" id="L153" title="All 2 branches missed.">      if (otherHeightLeftSide &gt; buildingHeightRightSide) {</span>
+<span class="nc" id="L154">        i++;</span>
+      } else {
+        break;
+      }
+<span class="nc" id="L158">    }</span>
+<span class="nc" id="L159">    buildings.add(i, building);</span>
+<span class="nc" id="L160">    updateCounters(building);</span>
+<span class="nc" id="L161">    updateScore(building);</span>
+<span class="nc" id="L162">    return i;</span>
+  }
+
+    /**
+     * Updates the score if a building has been placed on the map, that is needed
+     * for the current event.
+     *
+     * @param building - A reference to the building object that was placed
+     */
+  private void updateScore(Building building) {
+<span class="nc bnc" id="L172" title="All 2 branches missed.">      if (building == previewBuilding) {</span>
+<span class="nc" id="L173">          return;</span>
+      }
+<span class="nc" id="L175">      Event currentEvent = world.getCurrentEvent();</span>
+<span class="nc bnc" id="L176" title="All 2 branches missed.">      if (currentEvent != null &amp;&amp;</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">          currentEvent.getBuildingType() == building.type) {</span>
+<span class="nc" id="L178">          world.updateScore(currentEvent.getAdjustment());</span>
+      }
+<span class="nc" id="L180">  }</span>
+
+  /**
+   * Creates a counter for the building's type if it is the first to be placed,
+   * otherwise increments the counter for that type by one.
+
+   * @param building - A reference to the building object that was placed
+   */
+  private void updateCounters(Building building) {
+<span class="nc bnc" id="L189" title="All 2 branches missed.">    if (building == previewBuilding) {</span>
+<span class="nc" id="L190">      return;</span>
+    }
+<span class="nc bnc" id="L192" title="All 2 branches missed.">    if (!buildingCounts.containsKey(building.type)) {</span>
+<span class="nc" id="L193">      buildingCounts.put(building.type, 1);</span>
+<span class="nc" id="L194">      return;</span>
+    }
+<span class="nc" id="L196">    buildingCounts.put(building.type, buildingCounts.get(building.type) + 1);</span>
+<span class="nc" id="L197">  }</span>
+
+  /**
+   * Returns the number of buildings of a certain type that have been placed
+   * in the world.
+   *
+   * @param type - The type of building
+   * @return - The number of buildings of that type that have been placed
+   */
+  public int getBuildingCount(BuildingType type) {
+<span class="nc bnc" id="L207" title="All 2 branches missed.">    if (!buildingCounts.containsKey(type)) {</span>
+<span class="nc" id="L208">      return 0;</span>
+    }
+<span class="nc" id="L210">    return buildingCounts.get(type);</span>
+  }
+
+  /**
+   * Sets the building to render as a 'preview' on the map prior to placement.
+
+   * @param previewBuilding - The building to draw as a preview
+   */
+  public void setPreviewBuilding(Building previewBuilding) {
+<span class="nc bnc" id="L219" title="All 2 branches missed.">    if (this.previewBuilding != null) {</span>
+<span class="nc" id="L220">      buildings.remove(this.previewBuilding);</span>
+    }
+<span class="nc" id="L222">    this.previewBuilding = previewBuilding;</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">    if (previewBuilding != null) {</span>
+<span class="nc" id="L224">      placeBuilding(previewBuilding);</span>
+    }
+<span class="nc" id="L226">  }</span>
+
+  /**
+   * Draw the building texture at the position of the mouse cursor
+   * when building mode is enabled.
+
+   * @param building - The building to draw under the mouse cursor
+   * @param batch - the SpriteBatch to draw into
+   */
+  public void drawBuilding(Building building, SpriteBatch batch) {
+<span class="nc" id="L236">    Vector3 btmLeftPos = new Vector3(</span>
+        (float) building.location.x + (
+<span class="nc bnc" id="L238" title="All 2 branches missed.">          building.flipped ? building.textureOffset.x : building.textureOffset.x</span>
+        ),
+        (float) building.location.y + (
+<span class="nc bnc" id="L241" title="All 2 branches missed.">          building.flipped ? building.textureOffset.y : building.textureOffset.y</span>
+        ),
+        0f
+    );
+<span class="nc" id="L245">    Vector3 btmRightPos = new Vector3(btmLeftPos).add(new Vector3(building.size.x - 1, 0f, 0f));</span>
+<span class="nc" id="L246">    btmLeftPos.mul(isoTransform);</span>
+<span class="nc" id="L247">    btmRightPos.mul(isoTransform);</span>
+<span class="nc" id="L248">    batch.draw(</span>
+        building.texture,
+        btmLeftPos.x, btmRightPos.y,
+<span class="nc" id="L251">        building.texture.getWidth() * building.textureScale,</span>
+<span class="nc" id="L252">        building.texture.getHeight() * building.textureScale,</span>
+<span class="nc" id="L253">        0, 0, building.texture.getWidth(), building.texture.getHeight(),</span>
+        building.flipped, false
+    );
+<span class="nc" id="L256">  }</span>
+
+    /**
+     * Calculates the distance between the edges of two buildings.
+     * @param b1 - The first building
+     * @param b2 - The second building
+     * @return The distance between the edges of b1, b2.
+     */
+  public static float distance(Building b1, Building b2) {
+<span class="nc" id="L265">      float xdistance = (Math.abs((b1.location.x + (b1.size.x / 2f)) - (b2.location.x + (b2.size.x / 2f)))</span>
+                         - ((b1.size.x / 2f) + (b2.size.x / 2f)));
+<span class="nc" id="L267">      float ydistance = (Math.abs((b1.location.y + (b1.size.y / 2f)) - (b2.location.y + (b2.size.y / 2f)))</span>
+                         - ((b1.size.y / 2f) + (b2.size.y / 2f)));
+<span class="nc" id="L269">      return ((float) Math.sqrt(Math.pow(xdistance, 2) + Math.pow(ydistance, 2)));</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

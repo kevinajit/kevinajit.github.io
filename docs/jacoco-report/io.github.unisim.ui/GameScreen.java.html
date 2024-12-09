@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GameScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">io.github.unisim.ui</a> &gt; <span class="el_source">GameScreen.java</span></div><h1>GameScreen.java</h1><pre class="source lang-java linenums">package io.github.unisim.ui;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import io.github.unisim.GameState;
+import io.github.unisim.score.Score;
+import io.github.unisim.Timer;
+import io.github.unisim.world.UiInputProcessor;
+import io.github.unisim.world.World;
+import io.github.unisim.world.WorldInputProcessor;
+
+/**
+ * Game screen where the main game is rendered and controlled.
+ * Supports pausing the game with a pause menu.
+ */
+public class GameScreen implements Screen {
+  private World world;
+<span class="nc" id="L22">  private Stage stage = new Stage(new ScreenViewport());</span>
+  private InfoBar infoBar;
+  private BuildingMenu buildingMenu;
+  private EventBar eventBar;
+  private AchievementBar achievementBar;
+  private Timer timer;
+  private Score score;
+<span class="nc" id="L29">  private InputProcessor uiInputProcessor = new UiInputProcessor(stage);</span>
+  private InputProcessor worldInputProcessor;
+<span class="nc" id="L31">  private InputMultiplexer inputMultiplexer = new InputMultiplexer();</span>
+<span class="nc" id="L32">  private GameOverMenu gameOverMenu = new GameOverMenu();</span>
+
+  /**
+   * Constructor for the GameScreen.
+   */
+<span class="nc" id="L37">  public GameScreen() {</span>
+<span class="nc" id="L38">    timer = new Timer(300_000);</span>
+<span class="nc" id="L39">    score = new Score(100);</span>
+<span class="nc" id="L40">    world = new World(score);</span>
+<span class="nc" id="L41">    worldInputProcessor = new WorldInputProcessor(world);</span>
+<span class="nc" id="L42">    infoBar = new InfoBar(stage, timer, score, world);</span>
+<span class="nc" id="L43">    buildingMenu = new BuildingMenu(stage, world);</span>
+<span class="nc" id="L44">    eventBar = new EventBar(stage, world);</span>
+<span class="nc" id="L45">    achievementBar = new AchievementBar(stage, world);</span>
+
+<span class="nc" id="L47">    inputMultiplexer.addProcessor(GameState.fullscreenInputProcessor);</span>
+<span class="nc" id="L48">    inputMultiplexer.addProcessor(stage);</span>
+<span class="nc" id="L49">    inputMultiplexer.addProcessor(uiInputProcessor);</span>
+<span class="nc" id="L50">    inputMultiplexer.addProcessor(worldInputProcessor);</span>
+<span class="nc" id="L51">  }</span>
+
+  @Override
+  public void show() {
+<span class="nc" id="L55">  }</span>
+
+  @Override
+  public void render(float delta) {
+<span class="nc" id="L59">    world.render();</span>
+<span class="nc" id="L60">    float dt = Gdx.graphics.getDeltaTime();</span>
+<span class="nc bnc" id="L61" title="All 4 branches missed.">    if (!GameState.paused &amp;&amp; !GameState.gameOver) {</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">      if (!timer.tick(dt * 1000)) {</span>
+<span class="nc" id="L63">        GameState.gameOver = true;</span>
+<span class="nc" id="L64">        Gdx.input.setInputProcessor(gameOverMenu.getInputProcessor());</span>
+      }
+    }
+<span class="nc" id="L67">    stage.act(dt);</span>
+<span class="nc" id="L68">    infoBar.update();</span>
+<span class="nc" id="L69">    buildingMenu.update();</span>
+<span class="nc" id="L70">    eventBar.update();</span>
+<span class="nc" id="L71">    achievementBar.update();</span>
+<span class="nc" id="L72">    stage.draw();</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">    if (GameState.gameOver) {</span>
+<span class="nc" id="L74">      world.zoom((world.getMaxZoom() - world.getZoom()) * 2f);</span>
+<span class="nc" id="L75">      world.pan((90 - world.getCameraPos().x) / 10, -world.getCameraPos().y / 10);</span>
+<span class="nc" id="L76">      eventBar.setVisible(false);</span>
+<span class="nc" id="L77">      achievementBar.setVisible(false);</span>
+<span class="nc" id="L78">      gameOverMenu.render(delta);</span>
+    }
+<span class="nc" id="L80">  }</span>
+
+  @Override
+  public void resize(int width, int height) {
+<span class="nc" id="L84">    world.resize(width, height);</span>
+<span class="nc" id="L85">    stage.getViewport().update(width, height, true);</span>
+<span class="nc" id="L86">    infoBar.resize(width, height);</span>
+<span class="nc" id="L87">    buildingMenu.resize(width, height);</span>
+<span class="nc" id="L88">    eventBar.resize(width, height);</span>
+<span class="nc" id="L89">    achievementBar.resize(width, height);</span>
+<span class="nc" id="L90">    gameOverMenu.resize(width, height);</span>
+<span class="nc" id="L91">  }</span>
+
+  @Override
+  public void pause() {
+<span class="nc" id="L95">  }</span>
+
+  @Override
+  public void resume() {
+<span class="nc" id="L99">    Gdx.input.setInputProcessor(inputMultiplexer);</span>
+
+<span class="nc bnc" id="L101" title="All 2 branches missed.">    if (GameState.gameOver) {</span>
+<span class="nc" id="L102">      GameState.gameOver = false;</span>
+<span class="nc" id="L103">      GameState.paused = false;</span>
+<span class="nc" id="L104">      timer.reset();</span>
+<span class="nc" id="L105">      score.reset();</span>
+<span class="nc" id="L106">      world.reset();</span>
+<span class="nc" id="L107">      infoBar.reset();</span>
+<span class="nc" id="L108">      buildingMenu.reset();</span>
+<span class="nc" id="L109">      eventBar.reset();</span>
+<span class="nc" id="L110">      achievementBar.reset();</span>
+    }
+<span class="nc" id="L112">  }</span>
+
+  @Override
+  public void hide() {
+<span class="nc" id="L116">  }</span>
+
+  @Override
+  public void dispose() {
+<span class="nc" id="L120">    world.dispose();</span>
+<span class="nc" id="L121">    stage.dispose();</span>
+<span class="nc" id="L122">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

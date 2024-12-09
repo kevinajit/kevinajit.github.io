@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EventBar.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">io.github.unisim.ui</a> &gt; <span class="el_source">EventBar.java</span></div><h1>EventBar.java</h1><pre class="source lang-java linenums">package io.github.unisim.ui;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.utils.Align;
+import io.github.unisim.GameState;
+import io.github.unisim.event.Event;
+import io.github.unisim.world.World;
+
+public class EventBar {
+    private ShapeActor bar;
+<span class="nc" id="L14">    private Table eventsTable = new Table();</span>
+<span class="nc" id="L15">    private Skin skin = new Skin(Gdx.files.internal(&quot;ui/uiskin.json&quot;));</span>
+    //cells
+    private World world;
+    private Event currentEvent;
+
+    private Label eventNameLabel;
+    private Label eventDescriptionLabel;
+    private Label eventImplicationsLabel;
+
+    private Cell&lt;Label&gt; eventNameLabelCell;
+    private Cell&lt;Label&gt; eventDescriptionLabelCell;
+    private Cell&lt;Image&gt; eventIconCell;
+
+<span class="nc" id="L28">    public EventBar(Stage stage, World world) {</span>
+
+        // CHANGE (JUST FOR TESTING)
+<span class="nc" id="L31">        currentEvent = new Event(&quot;Plague&quot;,</span>
+            &quot;this will be the event description&quot;,
+<span class="nc" id="L33">            new Image(new Texture(Gdx.files.internal(&quot;buildings/pharmacy.png&quot;))),</span>
+            2,
+            1000f);
+
+<span class="nc" id="L37">        this.world = world;</span>
+
+        // do buttons and stuff
+<span class="nc" id="L40">        eventNameLabel = new Label(currentEvent.name, skin); // CHANGE when eventManager implemented</span>
+<span class="nc" id="L41">        eventDescriptionLabel = new Label(currentEvent.description, skin);</span>
+<span class="nc" id="L42">        eventDescriptionLabel.setWrap(true);</span>
+<span class="nc" id="L43">        eventImplicationsLabel = new Label(&quot;uh oh&quot;, skin);</span>
+
+<span class="nc" id="L45">        eventsTable.center().center();</span>
+<span class="nc" id="L46">        eventIconCell = eventsTable.add(currentEvent.icon);</span>
+<span class="nc" id="L47">        eventNameLabelCell = eventsTable.add(eventNameLabel).align(Align.center);</span>
+<span class="nc" id="L48">        eventDescriptionLabelCell = eventsTable.add(eventDescriptionLabel).align(Align.center);</span>
+<span class="nc" id="L49">        eventsTable.row();</span>
+        //eventImplicationsCell = eventsTable.add(eventImplicationsLabel);
+
+<span class="nc" id="L52">        bar = new ShapeActor(GameState.UISecondaryColour);</span>
+<span class="nc" id="L53">        stage.addActor(bar);</span>
+<span class="nc" id="L54">        stage.addActor(eventsTable);</span>
+<span class="nc" id="L55">        bar.setVisible(false);</span>
+<span class="nc" id="L56">        eventsTable.setVisible(false);</span>
+<span class="nc" id="L57">    }</span>
+
+    public void update() {
+<span class="nc bnc" id="L60" title="All 4 branches missed.">        if (world.getCurrentEvent() != null &amp;&amp; currentEvent == null){</span>
+<span class="nc" id="L61">            setVisible(true);</span>
+<span class="nc" id="L62">            currentEvent = world.getCurrentEvent();</span>
+        }
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        else if (world.getCurrentEvent() == null){</span>
+<span class="nc" id="L65">            currentEvent = null;</span>
+<span class="nc" id="L66">            setVisible(false);</span>
+        }
+
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (currentEvent != null) {</span>
+<span class="nc" id="L70">            currentEvent = world.getCurrentEvent();</span>
+<span class="nc" id="L71">            eventNameLabel.setText(currentEvent.name + &quot;\n&quot; + currentEvent.getRemainingTime());</span>
+<span class="nc" id="L72">            eventNameLabel.setAlignment(Align.center);</span>
+<span class="nc" id="L73">            eventDescriptionLabel.setText(currentEvent.description);</span>
+<span class="nc" id="L74">            eventDescriptionLabel.setAlignment(Align.center);</span>
+
+<span class="nc" id="L76">            eventNameLabelCell.setActor(eventNameLabel);</span>
+<span class="nc" id="L77">            eventDescriptionLabelCell.setActor(eventDescriptionLabel);</span>
+<span class="nc" id="L78">            eventIconCell.setActor(currentEvent.icon);</span>
+        }
+<span class="nc" id="L80">    }</span>
+
+    public void resize(int width, int height) {
+<span class="nc" id="L83">        float barWidth = height * 0.6f;</span>
+<span class="nc" id="L84">        float barHeight = (height * 0.10f);</span>
+<span class="nc" id="L85">        bar.setBounds(width - barWidth, height-barHeight-(height * 0.05f), barWidth, barHeight);</span>
+<span class="nc" id="L86">        eventsTable.setBounds(width - barWidth, height-barHeight-(height * 0.05f), barWidth, barHeight);</span>
+
+
+        // look at info bar for other stuff
+<span class="nc" id="L90">        eventNameLabel.setFontScale(height * 0.002f);</span>
+<span class="nc" id="L91">        eventDescriptionLabel.setFontScale(height * 0.0015f);</span>
+        //eventImplicationsLabel.setFontScale(height * 0.001f);
+
+<span class="nc" id="L94">        eventIconCell.width(barWidth * 0.20f).height(height * 0.10f);</span>
+<span class="nc" id="L95">        eventNameLabelCell.width(barWidth * 0.4f / 2f).height(height * 0.10f);</span>
+<span class="nc" id="L96">        eventDescriptionLabelCell.width(barWidth * 1.2f / 2f).height(height * 0.10f);</span>
+        //eventImplicationsCell.width(barWidth * 0.9f / 2f).height(height * 0.10f);
+
+        //eventsTable.setDebug(true);
+<span class="nc" id="L100">    }</span>
+
+    public void reset() {
+<span class="nc" id="L103">        setVisible(false);</span>
+<span class="nc" id="L104">    }</span>
+
+    public void setVisible(boolean visible) {
+<span class="nc" id="L107">        eventsTable.setVisible(visible);</span>
+<span class="nc" id="L108">        bar.setVisible(visible);</span>
+<span class="nc" id="L109">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

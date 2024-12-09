@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GameOverMenu.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">io.github.unisim.ui</a> &gt; <span class="el_source">GameOverMenu.java</span></div><h1>GameOverMenu.java</h1><pre class="source lang-java linenums">package io.github.unisim.ui;
+
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import io.github.unisim.GameState;
+
+/**
+ * Menu that is displayed when the timer has run out. This is where the final score
+ * will be calculated in future.
+ */
+public class GameOverMenu {
+  private Stage stage;
+  private Skin skin;
+<span class="nc" id="L21">  private ShapeActor bar = new ShapeActor(GameState.UISecondaryColour);</span>
+  private Table table;
+  private TextButton mainMenuButton;
+  private Cell&lt;TextButton&gt; buttonCell;
+<span class="nc" id="L25">  private InputMultiplexer inputMultiplexer = new InputMultiplexer();</span>
+
+  /**
+   * Creates a new GameOverMenu and initialises all events and UI elements used in the menu.
+   */
+<span class="nc" id="L30">  public GameOverMenu() {</span>
+<span class="nc" id="L31">    stage = new Stage(new ScreenViewport());</span>
+<span class="nc" id="L32">    table = new Table();</span>
+<span class="nc" id="L33">    skin = GameState.defaultSkin;</span>
+
+    // Play button
+<span class="nc" id="L36">    mainMenuButton = new TextButton(&quot;Return to Main Menu&quot;, skin);</span>
+<span class="nc" id="L37">    mainMenuButton.addListener(new ClickListener() {</span>
+      @Override
+      public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
+        // Switch to the game screen
+<span class="nc" id="L41">        GameState.currentScreen = GameState.startScreen;</span>
+<span class="nc" id="L42">      }</span>
+    });
+
+    // Add UI elements to the stage
+<span class="nc" id="L46">    buttonCell = table.add(mainMenuButton).center();</span>
+<span class="nc" id="L47">    stage.addActor(bar);</span>
+<span class="nc" id="L48">    stage.addActor(table);</span>
+
+<span class="nc" id="L50">    inputMultiplexer.addProcessor(GameState.fullscreenInputProcessor);</span>
+<span class="nc" id="L51">    inputMultiplexer.addProcessor(stage);</span>
+<span class="nc" id="L52">  }</span>
+
+
+  public void render(float delta) {
+<span class="nc" id="L56">    stage.act(delta);</span>
+<span class="nc" id="L57">    stage.draw();</span>
+<span class="nc" id="L58">  }</span>
+
+  /**
+   * Called when the game window is resized and we need to adjust the scale of the UI elements.
+
+   * @param width - The new game window width in pixels
+   * @param height - The new game window height in pixels
+   */
+  public void resize(int width, int height) {
+<span class="nc" id="L67">    stage.getViewport().update(width, height, true);</span>
+<span class="nc" id="L68">    table.setBounds(0, 0, width, height * 0.1f);</span>
+<span class="nc" id="L69">    bar.setBounds(0, 0, width, height * 0.1f);</span>
+<span class="nc" id="L70">    buttonCell.width(width * 0.3f).height(height * 0.1f);</span>
+<span class="nc" id="L71">  }</span>
+
+  public InputProcessor getInputProcessor() {
+<span class="nc" id="L74">    return inputMultiplexer;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

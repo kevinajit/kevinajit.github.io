@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GameState.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">io.github.unisim</a> &gt; <span class="el_source">GameState.java</span></div><h1>GameState.java</h1><pre class="source lang-java linenums">package io.github.unisim;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import io.github.unisim.ui.GameScreen;
+import io.github.unisim.ui.SettingsScreen;
+import io.github.unisim.ui.StartMenuScreen;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+/**
+ * Contains a collection of settings and references that should be available globally.
+ */
+<span class="nc" id="L18">public class GameState {</span>
+<span class="fc" id="L19">  public static Color UIPrimaryColour = new Color(0.250f, 0.326f, 0.865f, 1.0f);</span>
+<span class="fc" id="L20">  public static Color UISecondaryColour = new Color(0.722f, 0.646f, 0.953f, 1.0f);</span>
+<span class="nc" id="L21">  public static Skin defaultSkin = new Skin(Gdx.files.internal(&quot;ui/uiskin.json&quot;));</span>
+<span class="nc" id="L22">  public static Settings settings = new Settings();</span>
+<span class="nc" id="L23">  public static InputProcessor fullscreenInputProcessor = new FullscreenInputProcessor();</span>
+<span class="nc" id="L24">  public static Screen gameScreen = new GameScreen();</span>
+<span class="nc" id="L25">  public static Screen startScreen = new StartMenuScreen();</span>
+<span class="nc" id="L26">  public static Screen settingScreen = new SettingsScreen();</span>
+  public static Screen currentScreen;
+  // Create an unmodifiable set containing the IDs of all buildable tiles
+  // we use a set to make searching more efficient
+<span class="nc" id="L30">  public static Set&lt;Integer&gt; buildableTiles = Stream.of(</span>
+<span class="nc" id="L31">      14, 15).collect(Collectors.toUnmodifiableSet()</span>
+  );
+<span class="nc" id="L33">  public static boolean paused = false;</span>
+<span class="nc" id="L34">  public static boolean gameOver = false;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

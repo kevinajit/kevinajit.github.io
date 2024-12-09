@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EventManager.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">io.github.unisim.event</a> &gt; <span class="el_source">EventManager.java</span></div><h1>EventManager.java</h1><pre class="source lang-java linenums">package io.github.unisim.event;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import io.github.unisim.Timer;
+import io.github.unisim.building.BuildingType;
+import io.github.unisim.ui.GameScreen;
+import io.github.unisim.world.World;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+
+/**
+ * Manages the events that run in the game, and their execution.
+ */
+public class EventManager {
+<span class="nc" id="L19">    private ArrayList&lt;Event&gt; events = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L20">    private ArrayList&lt;Event&gt; pastEvents = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L21">    public boolean hasEvent = false;</span>
+    private int currentEvent;
+    private World world;
+    private Timer eventQueueTimer;
+<span class="nc" id="L25">    private Random rand = new Random();</span>
+
+
+    /**
+     * @param world The world of the game.
+     */
+<span class="nc" id="L31">    public EventManager(World world) {</span>
+<span class="nc" id="L32">        currentEvent = 0;</span>
+<span class="nc" id="L33">        eventQueueTimer = new Timer(30_000f);</span>
+<span class="nc" id="L34">        this.world = world;</span>
+
+<span class="nc" id="L36">        events.add(new Event(&quot;F. Flu&quot;,</span>
+            &quot;Freshers flu is running rampant!\nPlace more health buildings to regain student satisfaction.&quot;,
+<span class="nc" id="L38">            new Image(new Texture(Gdx.files.internal(&quot;buildings/pharmacy.png&quot;))),</span>
+            -30, 30, BuildingType.HEALTH));
+<span class="nc" id="L40">        events.add (new Event(&quot;Bed bugs&quot;,</span>
+            &quot;A block is infested with bed bugs!\nStudent satisfaction decreases by 0.5% per second.&quot;,
+<span class="nc" id="L42">            new Image(new Texture(Gdx.files.internal(&quot;buildings/accommodation.png&quot;))),</span>
+            -1,
+            2000f));
+<span class="nc" id="L45">        events.add (new Event(&quot;Fee Rise&quot;,</span>
+            &quot;Student tuition fees have risen.\nStudent satisfaction decreases by 1% per second.&quot;,
+<span class="nc" id="L47">            new Image(new Texture(Gdx.files.internal(&quot;buildings/library.png&quot;))),</span>
+            -1,
+            1000f));
+<span class="nc" id="L50">        events.add (new Event(&quot;Strikes&quot;,</span>
+            &quot;Lecturers are on strike!\nPlace more learning buildings to regain student satisfaction.&quot;,
+<span class="nc" id="L52">            new Image(new Texture(Gdx.files.internal(&quot;buildings/library.png&quot;))),</span>
+            -30, 30, BuildingType.LEARNING));
+<span class="nc" id="L54">    }</span>
+
+    public Event getCurrentEvent() {
+<span class="nc" id="L57">        return events.get(currentEvent);</span>
+    }
+
+    public void addEvent(Event event) {
+<span class="nc" id="L61">        events.add(event);</span>
+<span class="nc" id="L62">    }</span>
+
+    public void nextEvent() {
+<span class="nc" id="L65">        int nextEvent = currentEvent;</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">        while (pastEvents.contains(events.get(nextEvent))) {</span>
+<span class="nc" id="L67">            nextEvent = rand.nextInt(events.size());</span>
+        }
+<span class="nc" id="L69">        pastEvents.add(events.get(currentEvent));</span>
+<span class="nc" id="L70">        currentEvent = nextEvent;</span>
+<span class="nc" id="L71">    }</span>
+
+    /**Handles the event timer, and the wait timer.
+     *
+     * @return The amount the score should change by.
+     */
+    public float eventTick() {
+<span class="nc bnc" id="L78" title="All 2 branches missed.">        if (hasEvent) {</span>
+<span class="nc" id="L79">            Event event = getCurrentEvent();</span>
+<span class="nc" id="L80">            float score = event.tick(); // The amount to adjust score by</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">            hasEvent = !event.finished;</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">            if (!hasEvent) { eventQueueTimer.reset(); }</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">            if (!event.isTickEvent()) {</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">                if (world.getBuildingCount(event.getBuildingType()) &gt; 1) {</span>
+<span class="nc" id="L85">                    score = 0;</span>
+                }
+            }
+<span class="nc" id="L88">            return score;</span>
+        }
+        else {
+<span class="nc bnc" id="L91" title="All 2 branches missed.">            hasEvent = !eventQueueTimer.tick(Gdx.graphics.getDeltaTime() * 1000f);</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">            if (hasEvent) { nextEvent(); }</span>
+        }
+<span class="nc" id="L94">        return 0;</span>
+    }
+
+    public void reset() {
+<span class="nc" id="L98">        hasEvent = false;</span>
+<span class="nc" id="L99">        eventQueueTimer.reset();</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">        for (Event event : events) {</span>
+<span class="nc" id="L101">            event.reset();</span>
+<span class="nc" id="L102">        }</span>
+<span class="nc" id="L103">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

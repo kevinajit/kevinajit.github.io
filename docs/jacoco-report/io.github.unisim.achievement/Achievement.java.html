@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Achievement.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">io.github.unisim.achievement</a> &gt; <span class="el_source">Achievement.java</span></div><h1>Achievement.java</h1><pre class="source lang-java linenums">package io.github.unisim.achievement;
+
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import io.github.unisim.world.World;
+
+public class Achievement {
+    public String name;
+    public String description;
+    public Image icon;
+
+    private float scoreFactor;
+
+    private boolean achieved;
+    AchievementRequirement requirement;
+
+<span class="nc" id="L16">    public Achievement(String name, String description, Image icon, float scoreFactor, AchievementRequirement requirement) {</span>
+<span class="nc" id="L17">        this.name = name;</span>
+<span class="nc" id="L18">        this.description = description;</span>
+<span class="nc" id="L19">        this.icon = icon;</span>
+<span class="nc" id="L20">        this.scoreFactor = scoreFactor;</span>
+<span class="nc" id="L21">        achieved = false;</span>
+<span class="nc" id="L22">        this.requirement = requirement;</span>
+<span class="nc" id="L23">    }</span>
+
+    public float getScoreChange() {
+<span class="nc" id="L26">        float scoreChange = scoreFactor;</span>
+<span class="nc" id="L27">        scoreFactor = 0;</span>
+<span class="nc" id="L28">        return scoreChange;</span>
+    }
+
+    /**
+     * Checks if the achievement requirements have been met, and so the achievement has been achieved.
+     *
+     * @param world The world of the game.
+     * @return True if the achievement achieved, false otherwise.
+     */
+    public boolean checkAchieved(World world) {
+<span class="nc" id="L38">        boolean reqAchieved = requirement.checkAchieved(world);</span>
+<span class="nc bnc" id="L39" title="All 4 branches missed.">        if (!achieved &amp;&amp; reqAchieved) {</span>
+<span class="nc" id="L40">            achieved = true;</span>
+<span class="nc" id="L41">            return true;</span>
+        }
+<span class="nc" id="L43">        return false;</span>
+    }
+
+    public void reset() {
+<span class="nc" id="L47">        achieved = false;</span>
+        //does this ever actually change though
+<span class="nc" id="L49">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
