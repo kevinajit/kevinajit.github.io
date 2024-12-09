@@ -1,4 +1,4 @@
-### ENG1 Team 9 Project - UniSim
+### ENG1 Team 5 Project - UniSim
 #### About
 UniSim is a short 2D game in which you can take control of your own university - can you maximise student satisfaction under limited time and subject to random events?
 
