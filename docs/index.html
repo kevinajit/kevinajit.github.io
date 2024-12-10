@@ -10,10 +10,10 @@
         body {
             font-family: "Courier New", Courier, monospace;
             margin: 0;
-            padding: 0;
+            padding: 40px 0 0 0; /* Added padding at top so dropdowns have room */
             background-color: #EDE7F2;
             color: #333;
-            overflow-x: hidden; /* Prevent horizontal scroll if flakes drift off screen */
+            overflow-x: hidden;
         }
 
         #title-container {
@@ -21,6 +21,8 @@
             padding: 20px;
             text-align: center;
             color: white;
+            border-radius: 20px; /* More rounded corners */
+            margin: 0 20px; /* So we can see the rounded corners clearly */
         }
 
         #title {
@@ -32,15 +34,20 @@
         #header-container {
             display: flex;
             justify-content: center;
+            align-items: center; 
             gap: 20px;
             padding: 15px;
             background-color: #ffffff;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 20px; /* Rounded corners */
+            margin: 20px; /* Added some margin so we can see the radius */
         }
 
         .header-item {
             position: relative;
             font-size: 1em;
+            display: flex;
+            align-items: center;
         }
 
         .header-item a {
@@ -51,16 +58,13 @@
 
         .dropdown {
             cursor: pointer;
-            color: #3DAA44;
-        }
-
-        .dropdown:hover .dropdown-content {
-            display: block;
         }
 
         .dropdown-content {
             display: none;
             position: absolute;
+            top: 100%; /* Ensure dropdown appears below the link */
+            left: 0;
             background-color: #ffffff;
             box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
             z-index: 1;
@@ -68,10 +72,15 @@
             border-radius: 10px;
         }
 
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
         .dropdown-content a {
             display: block;
             padding: 5px 10px;
             color: #3DAA44;
+            text-decoration: none;
         }
 
         .dropdown-content a:hover {
@@ -88,13 +97,14 @@
         #gameplay-image {
             width: 500px;
             height: auto;
+            border-radius: 20px; 
         }
 
-        /* Snowflake styles */
+        /* Reverted Snowflake styles */
         .snowflake {
             position: fixed;
             top: -10px;
-            color: #FFF;
+            color: #FFF; /* Original white color */
             font-size: 1em;
             opacity: 0.9;
             pointer-events: none;
@@ -105,6 +115,7 @@
             0% { transform: translateY(-10px); }
             100% { transform: translateY(100vh); }
         }
+
     </style>
 </head>
 <body>
@@ -114,7 +125,7 @@
     <div id="header-container">
         <div class="header-item"><a href="https://github.com/lsk-520/Team5-A2">GitHub Repo</a></div>
         <div class="header-item dropdown">
-            <p>Assessment 1</p>
+            <a href="#">Assessment 1</a>
             <div class="dropdown-content">
                 <a href="weekly-plans.html">Weekly Plans</a>
                 <a href="./deliverables/Req1.pdf" download="Req1.pdf">Requirements</a>
@@ -125,7 +136,7 @@
             </div>
         </div>
         <div class="header-item dropdown">
-            <p>Assessment 2</p>
+            <a href="#">Assessment 2</a>
             <div class="dropdown-content">
                 <a href="./deliverables/Change2.pdf" download="Change2.pdf">Change Report</a>
                 <a href="./deliverables/Impl2.pdf" download="Impl2.pdf">Implementation</a>
@@ -142,29 +153,25 @@
     </div>
 
     <script>
-        // Simple snow falling effect
-        const NUM_SNOWFLAKES = 50; // Adjust number of snowflakes
+        // Previous simpler snowflake implementation
+        const NUM_SNOWFLAKES = 50;
         const FALL_DURATION_MIN = 5; // min seconds
         const FALL_DURATION_MAX = 10; // max seconds
 
         for (let i = 0; i < NUM_SNOWFLAKES; i++) {
             const snowflake = document.createElement('div');
             snowflake.className = 'snowflake';
-            snowflake.textContent = '❄'; // Snowflake character
+            snowflake.textContent = '❄'; // Original snowflake character
 
-            // Random horizontal start
             const startX = Math.random() * window.innerWidth;
             snowflake.style.left = `${startX}px`;
 
-            // Random size
-            const size = Math.random() * 1.5 + 0.5; 
+            const size = Math.random() * 1.5 + 0.5; // Original size range
             snowflake.style.fontSize = `${size}em`;
 
-            // Random fall duration
             const duration = Math.random() * (FALL_DURATION_MAX - FALL_DURATION_MIN) + FALL_DURATION_MIN;
             snowflake.style.animationDuration = `${duration}s`;
 
-            // Slight horizontal drift
             const drift = (Math.random() - 0.5) * 50;
             snowflake.style.transform = `translateX(${drift}px)`;
 
