@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UniSim Documentation</title>
-
     <style>
+        /* General Styles */
         body {
             font-family: "Courier New", Courier, monospace;
             margin: 0;
-            padding: 40px 0 0 0; /* Added padding at top so dropdowns have room */
+            padding: 40px 0 0;
             background-color: #EDE7F2;
             color: #333;
             overflow-x: hidden;
         }
 
+        /* Title Container */
         #title-container {
             background-color: #8C72A6;
             padding: 20px;
             text-align: center;
             color: white;
-            border-radius: 20px; /* More rounded corners */
-            margin: 0 20px; /* So we can see the rounded corners clearly */
+            border-radius: 20px;
+            margin: 0 20px;
         }
 
         #title {
@@ -31,16 +31,17 @@
             margin: 0;
         }
 
+        /* Header Styles */
         #header-container {
             display: flex;
             justify-content: center;
-            align-items: center; 
+            align-items: center;
             gap: 20px;
             padding: 15px;
             background-color: #ffffff;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 20px; /* Rounded corners */
-            margin: 20px; /* Added some margin so we can see the radius */
+            border-radius: 20px;
+            margin: 20px;
         }
 
         .header-item {
@@ -56,6 +57,7 @@
             font-weight: bold;
         }
 
+        /* Dropdown Menu */
         .dropdown {
             cursor: pointer;
         }
@@ -63,10 +65,10 @@
         .dropdown-content {
             display: none;
             position: absolute;
-            top: 100%; /* Ensure dropdown appears below the link */
+            top: 100%;
             left: 0;
             background-color: #ffffff;
-            box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
             z-index: 1;
             padding: 10px;
             border-radius: 10px;
@@ -88,6 +90,13 @@
             border-radius: 5px;
         }
 
+        /* Divider */
+        .dropdown-content hr {
+            margin: 10px 0;
+            border: 1px solid #EDE7F2;
+        }
+
+        /* Image Container */
         #image-container {
             display: flex;
             justify-content: center;
@@ -97,14 +106,14 @@
         #gameplay-image {
             width: 500px;
             height: auto;
-            border-radius: 20px; 
+            border-radius: 20px;
         }
 
-        /* Reverted Snowflake styles */
+        /* Snowflake Styles */
         .snowflake {
             position: fixed;
             top: -10px;
-            color: #FFF; /* Original white color */
+            color: #FFF;
             font-size: 1em;
             opacity: 0.9;
             pointer-events: none;
@@ -112,10 +121,13 @@
         }
 
         @keyframes fall {
-            0% { transform: translateY(-10px); }
-            100% { transform: translateY(100vh); }
+            0% {
+                transform: translateY(-10px);
+            }
+            100% {
+                transform: translateY(100vh);
+            }
         }
-
     </style>
 </head>
 <body>
@@ -143,30 +155,32 @@
                 <a href="./deliverables/Test2.pdf" download="Test2.pdf">Testing</a>
                 <a href="./deliverables/Eval2.pdf" download="Eval2.pdf">User Evaluation</a>
                 <a href="./deliverables/CI2.pdf" download="CI2.pdf">Continuous Integration</a>
+                <hr>
+                <a href="./deliverables/User Evaluation_ Questions and Responses.pdf"
+                   download="User Evaluation : Questions and Responses.pdf">
+                    User Evaluation: Questions and Responses
+                </a>
             </div>
         </div>
         <div class="header-item"><a href="UniSim-1.0.0.jar" download="UniSim-1.0.0.jar">Download</a></div>
     </div>
-
     <div id="image-container">
-        <img id="gameplay-image" src="UniSim Screenshot.png" alt="Gameplay Screenshot"/>
+        <img id="gameplay-image" src="UniSim Screenshot.png" alt="Gameplay Screenshot">
     </div>
-
     <script>
-        // Previous simpler snowflake implementation
         const NUM_SNOWFLAKES = 50;
-        const FALL_DURATION_MIN = 5; // min seconds
-        const FALL_DURATION_MAX = 10; // max seconds
+        const FALL_DURATION_MIN = 5;
+        const FALL_DURATION_MAX = 10;
 
         for (let i = 0; i < NUM_SNOWFLAKES; i++) {
             const snowflake = document.createElement('div');
             snowflake.className = 'snowflake';
-            snowflake.textContent = '❄'; // Original snowflake character
+            snowflake.textContent = '❄';
 
             const startX = Math.random() * window.innerWidth;
             snowflake.style.left = `${startX}px`;
 
-            const size = Math.random() * 1.5 + 0.5; // Original size range
+            const size = Math.random() * 1.5 + 0.5;
             snowflake.style.fontSize = `${size}em`;
 
             const duration = Math.random() * (FALL_DURATION_MAX - FALL_DURATION_MIN) + FALL_DURATION_MIN;
