@@ -4,26 +4,38 @@ import com.badlogic.gdx.Gdx;
 import io.github.unisim.Timer;
 import io.github.unisim.world.World;
 
+/**
+ * A requirement that depends on the score maintained over a specific amount of time.
+ */
 public class MaintainScoreRequirement implements AchievementRequirement {
     public Timer timeScoreMaintained;
     public float timeRequired;
     public float scoreRequired;
 
-<span class="nc" id="L12">    public MaintainScoreRequirement(float timeRequired, float scoreRequired) {</span>
-<span class="nc" id="L13">        this.timeRequired = timeRequired;</span>
-<span class="nc" id="L14">        this.scoreRequired = scoreRequired;</span>
-<span class="nc" id="L15">        timeScoreMaintained = new Timer(timeRequired);</span>
-<span class="nc" id="L16">    }</span>
+    /**
+     * Creates a requirement dependent on how long a score can be maintained.
+     *
+     * @param timeRequired The time required for the score to be maintained.
+     * @param scoreRequired The number the score must stay above.
+     */
+<span class="fc" id="L21">    public MaintainScoreRequirement(float timeRequired, float scoreRequired) {</span>
+<span class="fc" id="L22">        this.timeRequired = timeRequired;</span>
+<span class="fc" id="L23">        this.scoreRequired = scoreRequired;</span>
+<span class="fc" id="L24">        timeScoreMaintained = new Timer(timeRequired);</span>
+<span class="fc" id="L25">    }</span>
 
+    /**
+     * @return True if the score has been maintained over the time required, false otherwise.
+     */
     @Override
     public boolean checkAchieved(World world) {
-<span class="nc bnc" id="L20" title="All 2 branches missed.">        if (world.getScore() &lt; scoreRequired) {</span>
-<span class="nc" id="L21">            timeScoreMaintained = new Timer(timeRequired);</span>
+<span class="nc bnc" id="L32" title="All 2 branches missed.">        if (world.getScore() &lt; scoreRequired) {</span>
+<span class="nc" id="L33">            timeScoreMaintained = new Timer(timeRequired);</span>
         }
-<span class="nc bnc" id="L23" title="All 2 branches missed.">        if (!timeScoreMaintained.tick(Gdx.graphics.getDeltaTime() * 1000f)) {</span>
-<span class="nc" id="L24">            return true;</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">        if (!timeScoreMaintained.tick(Gdx.graphics.getDeltaTime() * 1000f)) {</span>
+<span class="nc" id="L36">            return true;</span>
         }
-<span class="nc" id="L26">        return false;</span>
+<span class="nc" id="L38">        return false;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

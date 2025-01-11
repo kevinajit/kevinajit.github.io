@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Leaderboard.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">io.github.unisim.ui</a> &gt; <span class="el_source">Leaderboard.java</span></div><h1>Leaderboard.java</h1><pre class="source lang-java linenums">package io.github.unisim.ui;
+
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
+import io.github.unisim.GameState;
+import io.github.unisim.event.Event;
+import io.github.unisim.world.World;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+
+/**
+ * Creates a leaderboard to display the leaderboard.
+ *
+ * &lt;p&gt;Handles both logic and ui components.&lt;/p&gt;
+ */
+public class Leaderboard {
+    private ShapeActor bar;
+<span class="nc" id="L27">    private Table boardTable = new Table();</span>
+<span class="nc" id="L28">    private Skin skin = new Skin(Gdx.files.internal(&quot;ui/uiskin.json&quot;));</span>
+
+    private World world;
+    private Stage stage;
+
+    private Label titleLabel;
+<span class="nc" id="L34">    private ArrayList&lt;Label&gt; userLabels = new ArrayList&lt;Label&gt;();</span>
+<span class="nc" id="L35">    private ArrayList&lt;Label&gt; scoreLabels = new ArrayList&lt;Label&gt;();</span>
+    private Label yourScoreLabel;
+
+    private Cell&lt;Label&gt; titleLabelCell;
+<span class="nc" id="L39">    private ArrayList&lt;Cell&lt;Label&gt;&gt; userLabelCells = new ArrayList&lt;Cell&lt;Label&gt;&gt;();</span>
+<span class="nc" id="L40">    private ArrayList&lt;Cell&lt;Label&gt;&gt; scoreLabelCells = new ArrayList&lt;Cell&lt;Label&gt;&gt;();</span>
+    private Cell&lt;Label&gt; yourScoreLabelCell;
+
+<span class="nc" id="L43">    private boolean shown = false;</span>
+    private ArrayList&lt;String[]&gt; leaderboard;
+
+  /**
+   * Creates a new leaderboard and adds its components to the stage.
+   *
+   * @param stage The stage to draw the leaderboard on.
+   * @param world The world to access the current user's score from.
+   */
+<span class="nc" id="L52">  public Leaderboard(Stage stage, World world) {</span>
+<span class="nc" id="L53">        this.world = world;</span>
+<span class="nc" id="L54">        bar = new ShapeActor(GameState.UIPrimaryColour);</span>
+<span class="nc" id="L55">        this.setVisible(false);</span>
+<span class="nc" id="L56">    }</span>
+
+    private void displayLeaderboard() {
+      // Table creation
+<span class="nc" id="L60">      titleLabel = new Label(&quot;Leaderboard&quot;, skin);</span>
+<span class="nc" id="L61">      titleLabel.setAlignment(Align.center);</span>
+<span class="nc" id="L62">      titleLabelCell = boardTable.add(titleLabel).align(Align.center).colspan(2);</span>
+
+<span class="nc bnc" id="L64" title="All 2 branches missed.">      for (int i = 0; i &lt; 5; i++) {</span>
+<span class="nc" id="L65">        boardTable.row();</span>
+<span class="nc" id="L66">        String[] details = getDetails(i);</span>
+<span class="nc" id="L67">        userLabels.add(new Label(details[0], skin));</span>
+<span class="nc" id="L68">        scoreLabels.add(new Label(details[1] + &quot;%&quot;, skin));</span>
+<span class="nc" id="L69">        userLabels.get(i).setAlignment(Align.center);</span>
+<span class="nc" id="L70">        scoreLabels.get(i).setAlignment(Align.center);</span>
+<span class="nc" id="L71">        userLabelCells.add(boardTable.add(userLabels.get(i)).align(Align.center));</span>
+<span class="nc" id="L72">        scoreLabelCells.add(boardTable.add(scoreLabels.get(i)).align(Align.center));</span>
+      }
+<span class="nc" id="L74">      boardTable.row();</span>
+
+<span class="nc" id="L76">      yourScoreLabel = new Label(&quot;Your Score: &quot; + (int)world.getScore(), skin);</span>
+<span class="nc" id="L77">      yourScoreLabelCell = boardTable.add(yourScoreLabel).align(Align.center).colspan(2);</span>
+<span class="nc" id="L78">    }</span>
+
+    private String[] getDetails(int i) {
+<span class="nc bnc" id="L81" title="All 2 branches missed.">      if (i &gt;= leaderboard.size()) {</span>
+<span class="nc" id="L82">        return new String[]{&quot;AAA&quot;, &quot;0&quot;};</span>
+      }
+      else {
+<span class="nc" id="L85">        return leaderboard.get(i);</span>
+      }
+    }
+
+    private void updateLeaderboard() {
+<span class="nc" id="L90">      shown = true;</span>
+      // Gets values from leaderboard.txt (sorted by descending score).
+<span class="nc" id="L92">      String username = GameState.settings.getUsername();</span>
+<span class="nc" id="L93">      String lbString = Gdx.files.internal(&quot;leaderboard.txt&quot;).readString();</span>
+<span class="nc" id="L94">      leaderboard = new ArrayList&lt;&gt;(); // To write back to the file.</span>
+      // If leaderboard empty, add current username and score.
+<span class="nc bnc" id="L96" title="All 2 branches missed.">      if (lbString.isEmpty()) {</span>
+<span class="nc" id="L97">        leaderboard.add(new String[]{username, String.valueOf((int)world.getScore())});</span>
+      }
+      // Otherwise, read from the current leaderboard and add in the current username and score.
+      else {
+        // Get names and scores off the leaderboard.
+<span class="nc" id="L102">        String[] lbArray = lbString.split(&quot;\n&quot;);</span>
+<span class="nc" id="L103">        String[][] namePointsArray = new String[lbArray.length][2]; // To add new details to.</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        for (int i = 0; i &lt; lbArray.length; i++) {</span>
+<span class="nc" id="L105">          namePointsArray[i] = lbArray[i].split(&quot; &quot;);</span>
+        }
+        // Add current name and score to leaderboard.
+<span class="nc" id="L108">        boolean added = false;</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        for (String[] namePoints : namePointsArray) {</span>
+<span class="nc bnc" id="L110" title="All 4 branches missed.">          if (Integer.valueOf(namePoints[1]) &lt;= (int)(world.getScore()) &amp;&amp; !added) {</span>
+<span class="nc" id="L111">            leaderboard.add(new String[]{username, String.valueOf((int)(world.getScore()))});</span>
+<span class="nc" id="L112">            leaderboard.add(namePoints);</span>
+<span class="nc" id="L113">            added = true;</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">          } else if (namePoints[0] != username) {</span>
+<span class="nc" id="L115">            leaderboard.add(namePoints);</span>
+          }
+        }
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        if (!added) {</span>
+<span class="nc" id="L119">          leaderboard.add(new String[]{username, String.valueOf((int)(world.getScore()))});</span>
+        }
+      }
+      // Write back to file.
+<span class="nc" id="L123">      String lbWrite = &quot;&quot;;</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">      for (String[] namePoints : leaderboard) {</span>
+<span class="nc" id="L125">        lbWrite += namePoints[0] + &quot; &quot; + namePoints[1] + &quot;\n&quot;;</span>
+<span class="nc" id="L126">      }</span>
+<span class="nc" id="L127">      try (BufferedWriter writer = new BufferedWriter(new FileWriter(&quot;leaderboard.txt&quot;))) {</span>
+<span class="nc" id="L128">        writer.write(lbWrite);</span>
+<span class="nc" id="L129">      } catch (IOException e) {}</span>
+<span class="nc" id="L130">    }</span>
+
+    public void resize(int width, int height) {
+<span class="nc bnc" id="L133" title="All 2 branches missed.">      if (shown) {</span>
+<span class="nc" id="L134">        float barWidth = height * 0.3f;</span>
+<span class="nc" id="L135">        float barHeight = (height * 0.42f);</span>
+<span class="nc" id="L136">        bar.setBounds((width - barWidth) / 2f, ((height - barHeight) / 2f) - (height * 0.015f), barWidth, barHeight);</span>
+<span class="nc" id="L137">        boardTable.setBounds((width - barWidth) / 2f, ((height - barHeight) / 2f) - (height * 0.015f), barWidth, barHeight);</span>
+
+<span class="nc" id="L139">        titleLabel.setFontScale(height * 0.002f);</span>
+<span class="nc" id="L140">        titleLabelCell.height(height * 0.05f);</span>
+<span class="nc" id="L141">        yourScoreLabel.setFontScale(height * 0.002f);</span>
+<span class="nc" id="L142">        yourScoreLabelCell.height(height * 0.1f);</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">        for (int i = 0; i &lt; 5; i++) {</span>
+<span class="nc" id="L144">          userLabels.get(i).setFontScale(height * 0.0015f);</span>
+<span class="nc" id="L145">          userLabelCells.get(i).width(barWidth * 0.5f).height(height * 0.05f);</span>
+<span class="nc" id="L146">          scoreLabels.get(i).setFontScale(height * 0.0015f);</span>
+<span class="nc" id="L147">          scoreLabelCells.get(i).width(barWidth * 0.5f).height(height * 0.05f);</span>
+        }
+      }
+<span class="nc" id="L150">    }</span>
+
+    public void show(Stage stage, float delta) {
+<span class="nc bnc" id="L153" title="All 2 branches missed.">      if (!shown) {</span>
+<span class="nc" id="L154">        updateLeaderboard();</span>
+<span class="nc" id="L155">        displayLeaderboard();</span>
+<span class="nc" id="L156">        stage.addActor(bar);</span>
+<span class="nc" id="L157">        stage.addActor(boardTable);</span>
+      }
+<span class="nc" id="L159">      this.setVisible(true);</span>
+
+<span class="nc" id="L161">      this.stage = stage;</span>
+<span class="nc" id="L162">      stage.act(delta);</span>
+<span class="nc" id="L163">      stage.draw();</span>
+<span class="nc" id="L164">    }</span>
+
+    public void setVisible(boolean visible) {
+<span class="nc" id="L167">      boardTable.setVisible(visible);</span>
+<span class="nc" id="L168">      bar.setVisible(visible);</span>
+<span class="nc" id="L169">    }</span>
+
+    public void reset() {
+<span class="nc" id="L172">      setVisible(false);</span>
+<span class="nc" id="L173">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

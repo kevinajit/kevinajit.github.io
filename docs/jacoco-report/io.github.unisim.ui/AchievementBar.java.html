@@ -12,13 +12,15 @@ import io.github.unisim.achievement.WelcomeRequirement;
 import io.github.unisim.building.BuildingType;
 import io.github.unisim.world.World;
 
+/**
+ * A bar to display achievements.
+ */
 public class AchievementBar {
     ShapeActor bar;
-<span class="nc" id="L17">    private Table achievementsTable = new Table();</span>
-<span class="nc" id="L18">    private Skin skin = new Skin(Gdx.files.internal(&quot;ui/uiskin.json&quot;));</span>
+<span class="nc" id="L20">    private Table achievementsTable = new Table();</span>
+<span class="nc" id="L21">    private Skin skin = new Skin(Gdx.files.internal(&quot;ui/uiskin.json&quot;));</span>
 
     private World world;
-    // can be null
     private Achievement currentAchievement;
 
     private Label achievementNameLabel;
@@ -28,78 +30,90 @@ public class AchievementBar {
     private Cell&lt;Label&gt; achievementDescriptionCell;
     private Cell&lt;Image&gt; achievementIconCell;
 
-<span class="nc" id="L31">    public AchievementBar(Stage stage, World world) {</span>
-<span class="nc" id="L32">        this.world = world;</span>
+  /**
+   * Create a new AchievementBar and add its components.
+   *
+   * @param stage - The stage to draw the achievementBar.
+   * @param world - The world to access achievements from.
+   */
+<span class="nc" id="L39">  public AchievementBar(Stage stage, World world) {</span>
+<span class="nc" id="L40">        this.world = world;</span>
 
-<span class="nc" id="L34">        currentAchievement = new Achievement(&quot;Start&quot;,</span>
+<span class="nc" id="L42">        currentAchievement = new Achievement(&quot;Start&quot;,</span>
             &quot;game&quot;,
-<span class="nc" id="L36">            new Image(new Texture(Gdx.files.internal(&quot;buildings/accommodation.png&quot;))),</span>
+<span class="nc" id="L44">            new Image(new Texture(Gdx.files.internal(&quot;buildings/accommodation.png&quot;))),</span>
             0,
             new WelcomeRequirement());
 
-<span class="nc" id="L40">        achievementNameLabel = new Label(currentAchievement.name, skin);</span>
-<span class="nc" id="L41">        achievementDescriptionLabel = new Label(currentAchievement.description, skin);</span>
-<span class="nc" id="L42">        achievementNameLabel.setWrap(true);</span>
-<span class="nc" id="L43">        achievementDescriptionLabel.setWrap(true);</span>
+<span class="nc" id="L48">        achievementNameLabel = new Label(currentAchievement.name, skin);</span>
+<span class="nc" id="L49">        achievementDescriptionLabel = new Label(currentAchievement.description, skin);</span>
+<span class="nc" id="L50">        achievementNameLabel.setWrap(true);</span>
+<span class="nc" id="L51">        achievementDescriptionLabel.setWrap(true);</span>
 
-<span class="nc" id="L45">        achievementsTable.center().center();</span>
-<span class="nc" id="L46">        achievementIconCell = achievementsTable.add(currentAchievement.icon);</span>
-<span class="nc" id="L47">        achievementNameCell = achievementsTable.add(achievementNameLabel).align(Align.center);</span>
-<span class="nc" id="L48">        achievementDescriptionCell = achievementsTable.add(achievementDescriptionLabel).align(Align.center);</span>
-<span class="nc" id="L49">        achievementsTable.row();</span>
+<span class="nc" id="L53">        achievementsTable.center().center();</span>
+<span class="nc" id="L54">        achievementIconCell = achievementsTable.add(currentAchievement.icon);</span>
+<span class="nc" id="L55">        achievementNameCell = achievementsTable.add(achievementNameLabel).align(Align.center);</span>
+<span class="nc" id="L56">        achievementDescriptionCell = achievementsTable.add(achievementDescriptionLabel).align(Align.center);</span>
+<span class="nc" id="L57">        achievementsTable.row();</span>
 
-<span class="nc" id="L51">        bar = new ShapeActor(GameState.UISecondaryColour);</span>
-<span class="nc" id="L52">        stage.addActor(bar);</span>
-<span class="nc" id="L53">        stage.addActor(achievementsTable);</span>
-<span class="nc" id="L54">        bar.setVisible(false);</span>
-<span class="nc" id="L55">        achievementsTable.setVisible(false);</span>
-<span class="nc" id="L56">    }</span>
+<span class="nc" id="L59">        bar = new ShapeActor(GameState.UISecondaryColour);</span>
+<span class="nc" id="L60">        stage.addActor(bar);</span>
+<span class="nc" id="L61">        stage.addActor(achievementsTable);</span>
+<span class="nc" id="L62">        bar.setVisible(false);</span>
+<span class="nc" id="L63">        achievementsTable.setVisible(false);</span>
+<span class="nc" id="L64">    }</span>
 
-    public void update() {
-<span class="nc" id="L59">        currentAchievement = world.getCurrentAchievement();</span>
-<span class="nc bnc" id="L60" title="All 2 branches missed.">        if (currentAchievement != null) {</span>
-<span class="nc" id="L61">            setVisible(true);</span>
+  /**
+   * Called when the ui needs to be updated, usually on every frame.
+   */
+  public void update() {
+<span class="nc" id="L70">        currentAchievement = world.getCurrentAchievement();</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        if (currentAchievement != null) {</span>
+<span class="nc" id="L72">            setVisible(true);</span>
         }
         else {
-<span class="nc" id="L64">            setVisible(false);</span>
+<span class="nc" id="L75">            setVisible(false);</span>
         }
-        // and world.getNextAchievement()
-        // then call and change visability + currentAchievement
 
-<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (currentAchievement != null) {</span>
-            // currentAchievement = world.getCurrentAchievement()
-<span class="nc" id="L71">            achievementNameLabel.setText(currentAchievement.name);</span>
-<span class="nc" id="L72">            achievementNameLabel.setAlignment(Align.center);</span>
-<span class="nc" id="L73">            achievementDescriptionLabel.setText(currentAchievement.description);</span>
-<span class="nc" id="L74">            achievementDescriptionLabel.setAlignment(Align.center);</span>
+        // Setting up the display for the current achievement
+<span class="nc bnc" id="L79" title="All 2 branches missed.">        if (currentAchievement != null) {</span>
+<span class="nc" id="L80">            achievementNameLabel.setText(currentAchievement.name);</span>
+<span class="nc" id="L81">            achievementNameLabel.setAlignment(Align.center);</span>
+<span class="nc" id="L82">            achievementDescriptionLabel.setText(currentAchievement.description);</span>
+<span class="nc" id="L83">            achievementDescriptionLabel.setAlignment(Align.center);</span>
 
-<span class="nc" id="L76">            achievementNameCell.setActor(achievementNameLabel);</span>
-<span class="nc" id="L77">            achievementDescriptionCell.setActor(achievementDescriptionLabel);</span>
-<span class="nc" id="L78">            achievementIconCell.setActor(currentAchievement.icon);</span>
+<span class="nc" id="L85">            achievementNameCell.setActor(achievementNameLabel);</span>
+<span class="nc" id="L86">            achievementDescriptionCell.setActor(achievementDescriptionLabel);</span>
+<span class="nc" id="L87">            achievementIconCell.setActor(currentAchievement.icon);</span>
         }
-<span class="nc" id="L80">    }</span>
+<span class="nc" id="L89">    }</span>
+  /**
+   * Update the bounds of the background &amp; table actors to fit the new size of the screen.
 
+   * @param width - The new width of the screen in pixels.
+   * @param height - The enw height of the screen in pixels.
+   */
     public void resize(int width, int height) {
-<span class="nc" id="L83">        float barWidth = height * 0.6f;</span>
-<span class="nc" id="L84">        float barHeight = height * 0.1f;</span>
-<span class="nc" id="L85">        bar.setBounds(width - barWidth, height-(barHeight * 2f)-(height * 0.05f), barWidth, barHeight);</span>
-<span class="nc" id="L86">        achievementsTable.setBounds(width - barWidth, height-(barHeight * 2f)-(height * 0.05f), barWidth, barHeight);</span>
+<span class="nc" id="L97">        float barWidth = height * 0.6f;</span>
+<span class="nc" id="L98">        float barHeight = height * 0.1f;</span>
+<span class="nc" id="L99">        bar.setBounds(width - barWidth, height-(barHeight * 2f)-(height * 0.05f), barWidth, barHeight);</span>
+<span class="nc" id="L100">        achievementsTable.setBounds(width - barWidth, height-(barHeight * 2f)-(height * 0.05f), barWidth, barHeight);</span>
 
-<span class="nc" id="L88">        achievementNameLabel.setFontScale(height * 0.002f);</span>
-<span class="nc" id="L89">        achievementDescriptionLabel.setFontScale(height * 0.0015f);</span>
+<span class="nc" id="L102">        achievementNameLabel.setFontScale(height * 0.002f);</span>
+<span class="nc" id="L103">        achievementDescriptionLabel.setFontScale(height * 0.0015f);</span>
 
-<span class="nc" id="L91">        achievementIconCell.width(barWidth * 0.2f).height(height * 0.1f);</span>
-<span class="nc" id="L92">        achievementNameCell.width(barWidth * 0.4f / 2f).height(height * 0.10f);</span>
-<span class="nc" id="L93">        achievementDescriptionCell.width(barWidth * 1.2f / 2f).height(height * 0.10f);</span>
-<span class="nc" id="L94">    }</span>
+<span class="nc" id="L105">        achievementIconCell.width(barWidth * 0.2f).height(height * 0.1f);</span>
+<span class="nc" id="L106">        achievementNameCell.width(barWidth * 0.4f / 2f).height(height * 0.10f);</span>
+<span class="nc" id="L107">        achievementDescriptionCell.width(barWidth * 1.2f / 2f).height(height * 0.10f);</span>
+<span class="nc" id="L108">    }</span>
 
     public void reset() {
-<span class="nc" id="L97">        setVisible(false);</span>
-<span class="nc" id="L98">    }</span>
+<span class="nc" id="L111">        setVisible(false);</span>
+<span class="nc" id="L112">    }</span>
 
     public void setVisible(boolean visible) {
-<span class="nc" id="L101">        achievementsTable.setVisible(visible);</span>
-<span class="nc" id="L102">        bar.setVisible(visible);</span>
-<span class="nc" id="L103">    }</span>
+<span class="nc" id="L115">        achievementsTable.setVisible(visible);</span>
+<span class="nc" id="L116">        bar.setVisible(visible);</span>
+<span class="nc" id="L117">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -2,12 +2,9 @@
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Cell;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import io.github.unisim.GameState;
@@ -21,24 +18,27 @@ import io.github.unisim.world.World;
  */
 public class InfoBar {
   private ShapeActor bar;
-<span class="nc" id="L24">  private Table infoTable = new Table();</span>
-<span class="nc" id="L25">  private Table titleTable = new Table();</span>
-<span class="nc" id="L26">  private Table buildingCountersTable = new Table();</span>
+<span class="nc" id="L21">  private Table infoTable = new Table();</span>
+<span class="nc" id="L22">  private Table titleTable = new Table();</span>
+<span class="nc" id="L23">  private Table buildingCountersTable = new Table();</span>
   private Label[] buildingCounterLabels;
-<span class="nc" id="L28">  private Skin skin = new Skin(Gdx.files.internal(&quot;ui/uiskin.json&quot;));</span>
+<span class="nc" id="L25">  private Skin skin = new Skin(Gdx.files.internal(&quot;ui/uiskin.json&quot;));</span>
   //private Label scoreLabel = new Label(&quot;86%&quot;, skin);
   private Label scoreLabel;
-<span class="nc" id="L31">  private Label titleLabel = new Label(&quot;UniSim&quot;, skin);</span>
+<span class="nc" id="L28">  private Label titleLabel = new Label(&quot;UniSim&quot;, skin);</span>
   private Label timerLabel;
-<span class="nc" id="L33">  private Texture pauseTexture = new Texture(&quot;ui/pause.png&quot;);</span>
-<span class="nc" id="L34">  private Texture playTexture = new Texture(&quot;ui/play.png&quot;);</span>
-<span class="nc" id="L35">  private Image pauseImage = new Image(pauseTexture);</span>
-<span class="nc" id="L36">  private Image playImage = new Image(playTexture);</span>
+<span class="nc" id="L30">  private Texture pauseTexture = new Texture(&quot;ui/pause.png&quot;);</span>
+<span class="nc" id="L31">  private Texture playTexture = new Texture(&quot;ui/play.png&quot;);</span>
+<span class="nc" id="L32">  private Image pauseImage = new Image(pauseTexture);</span>
+<span class="nc" id="L33">  private Image playImage = new Image(playTexture);</span>
+<span class="nc" id="L34">  private Texture settingsTexture = new Texture(&quot;ui/settings_icon.png&quot;);</span>
+<span class="nc" id="L35">  private Image settingsButton = new Image(settingsTexture);</span>
   private Timer timer;
   private Score score;
   private Cell&lt;Label&gt; timerLabelCell;
   private Cell&lt;Label&gt; scoreLabelCell;
   private Cell&lt;Image&gt; pauseButtonCell;
+  private Cell&lt;Image&gt; settingsButtonCell;
   private Cell&lt;Table&gt; buildingCountersTableCell;
   private Cell[] buildingCounterCells;
   private int buildingTypesCount;
@@ -67,60 +67,70 @@ public class InfoBar {
 <span class="nc" id="L67">    buildingCounterCells[3] = buildingCountersTable.add(buildingCounterLabels[3]);</span>
 <span class="nc" id="L68">    buildingCounterCells[4] = buildingCountersTable.add(buildingCounterLabels[4]);</span>
 
-
     // Info Table
-<span class="nc" id="L72">    timerLabel = new Label(timer.getRemainingTime(), skin);</span>
-<span class="nc" id="L73">    scoreLabel = new Label(score.getScoreString(), skin);</span>
-<span class="nc" id="L74">    infoTable.center().center();</span>
+<span class="nc" id="L71">    timerLabel = new Label(timer.getRemainingTime(), skin);</span>
+<span class="nc" id="L72">    scoreLabel = new Label(score.getScoreString(), skin);</span>
+<span class="nc" id="L73">    infoTable.center().center();</span>
+<span class="nc" id="L74">    settingsButtonCell = infoTable.add(settingsButton).align(Align.center);</span>
 <span class="nc" id="L75">    pauseButtonCell = infoTable.add(playImage).align(Align.center);</span>
 <span class="nc" id="L76">    timerLabelCell = infoTable.add(timerLabel).align(Align.center);</span>
 <span class="nc" id="L77">    scoreLabelCell = infoTable.add(scoreLabel).align(Align.center);</span>
 <span class="nc" id="L78">    buildingCountersTableCell = infoTable.add(buildingCountersTable).expandX().align(Align.right);</span>
 
+    // Back button
+<span class="nc" id="L81">    settingsButton.addListener(new ClickListener() {</span>
+      @Override
+      public void clicked(InputEvent event, float x, float y) {
+<span class="nc" id="L84">        GameState.currentScreen = GameState.settingScreen;</span>
+<span class="nc" id="L85">      }</span>
+    });
+
     // Pause button
-<span class="nc" id="L81">    pauseImage.addListener(new ClickListener() {</span>
+<span class="nc" id="L89">    pauseImage.addListener(new ClickListener() {</span>
       @Override
       public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
-<span class="nc" id="L84">        GameState.paused = true;</span>
-<span class="nc" id="L85">        pauseButtonCell.setActor(playImage);</span>
-<span class="nc" id="L86">      }</span>
+<span class="nc" id="L92">        GameState.paused = true;</span>
+<span class="nc" id="L93">        pauseButtonCell.setActor(playImage);</span>
+<span class="nc" id="L94">      }</span>
     });
 
     // Play button
-<span class="nc" id="L90">    playImage.addListener(new ClickListener() {</span>
+<span class="nc" id="L98">    playImage.addListener(new ClickListener() {</span>
       @Override
       public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
-<span class="nc" id="L93">        GameState.paused = false;</span>
-<span class="nc" id="L94">        pauseButtonCell.setActor(pauseImage);</span>
-<span class="nc" id="L95">      }</span>
+<span class="nc" id="L101">        GameState.paused = false;</span>
+<span class="nc" id="L102">        pauseButtonCell.setActor(pauseImage);</span>
+<span class="nc" id="L103">      }</span>
     });
 
-<span class="nc" id="L98">    titleTable.add(titleLabel).expandX().align(Align.center);</span>
+<span class="nc" id="L106">    titleTable.add(titleLabel).expandX().align(Align.center);</span>
 
-<span class="nc" id="L100">    bar = new ShapeActor(GameState.UIPrimaryColour);</span>
-<span class="nc" id="L101">    stage.addActor(bar);</span>
-<span class="nc" id="L102">    stage.addActor(infoTable);</span>
-<span class="nc" id="L103">    stage.addActor(titleTable);</span>
-<span class="nc" id="L104">  }</span>
+<span class="nc" id="L108">    bar = new ShapeActor(GameState.UIPrimaryColour);</span>
+<span class="nc" id="L109">    stage.addActor(bar);</span>
+<span class="nc" id="L110">    stage.addActor(infoTable);</span>
+<span class="nc" id="L111">    stage.addActor(titleTable);</span>
+<span class="nc" id="L112">  }</span>
 
   /**
    * Called when the UI needs to be updated, usually on every frame.
    */
   public void update() {
-<span class="nc" id="L110">    timerLabel.setText(timer.getRemainingTime());</span>
-<span class="nc" id="L111">    scoreLabel.setText(score.getScoreString());</span>
-<span class="nc" id="L112">    buildingCounterLabels[0].setText(&quot;Recreation: &quot;</span>
-<span class="nc" id="L113">        + Integer.toString(world.getBuildingCount(BuildingType.RECREATION)));</span>
-<span class="nc" id="L114">    buildingCounterLabels[1].setText(&quot;Learning: &quot;</span>
-<span class="nc" id="L115">        + Integer.toString(world.getBuildingCount(BuildingType.LEARNING)));</span>
-<span class="nc" id="L116">    buildingCounterLabels[2].setText(&quot;Health: &quot;</span>
-<span class="nc" id="L117">        + Integer.toString(world.getBuildingCount(BuildingType.HEALTH)));</span>
-<span class="nc" id="L118">    buildingCounterLabels[3].setText(&quot;Accomm.: &quot;</span>
-<span class="nc" id="L119">        + Integer.toString(world.getBuildingCount(BuildingType.ACCOMMODATION)));</span>
-<span class="nc" id="L120">    buildingCounterLabels[4].setText(&quot;Food: &quot;</span>
-<span class="nc" id="L121">        + Integer.toString(world.getBuildingCount(BuildingType.FOOD)));</span>
-<span class="nc bnc" id="L122" title="All 2 branches missed.">    pauseButtonCell.setActor(GameState.paused ? playImage : pauseImage);</span>
-<span class="nc" id="L123">  }</span>
+<span class="nc" id="L118">    timerLabel.setText(timer.getRemainingTime());</span>
+<span class="nc" id="L119">    scoreLabel.setText(score.getScoreString());</span>
+<span class="nc" id="L120">    buildingCounterLabels[0].setText(&quot;Recreation: &quot;</span>
+<span class="nc" id="L121">        + Integer.toString(world.getBuildingCount(BuildingType.RECREATION)));</span>
+<span class="nc" id="L122">    buildingCounterLabels[1].setText(&quot;Learning: &quot;</span>
+<span class="nc" id="L123">        + Integer.toString(world.getBuildingCount(BuildingType.LEARNING)));</span>
+<span class="nc" id="L124">    buildingCounterLabels[2].setText(&quot;Health: &quot;</span>
+<span class="nc" id="L125">        + Integer.toString(world.getBuildingCount(BuildingType.HEALTH)));</span>
+<span class="nc" id="L126">    buildingCounterLabels[3].setText(&quot;Accomm.: &quot;</span>
+<span class="nc" id="L127">        + Integer.toString(world.getBuildingCount(BuildingType.ACCOMMODATION)));</span>
+<span class="nc" id="L128">    buildingCounterLabels[4].setText(&quot;Food: &quot;</span>
+<span class="nc" id="L129">        + Integer.toString(world.getBuildingCount(BuildingType.FOOD)));</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">    pauseButtonCell.setActor(GameState.paused ? playImage : pauseImage);</span>
+
+<span class="nc bnc" id="L132" title="All 2 branches missed.">    settingsButton.setVisible(!GameState.gameOver);</span>
+<span class="nc" id="L133">  }</span>
 
   /**
    * Update the bounds of the background &amp; table actors to fit the new size of the screen.
@@ -129,31 +139,34 @@ public class InfoBar {
    * @param height - The enw height of the screen in pixels.
    */
   public void resize(int width, int height) {
-<span class="nc" id="L132">    bar.setBounds(0, height * 0.95f, width, height * 0.05f);</span>
-<span class="nc" id="L133">    infoTable.setBounds(0, height * 0.95f, width, height * 0.05f);</span>
-<span class="nc" id="L134">    titleTable.setBounds(0, height * 0.95f, width, height * 0.05f);</span>
+<span class="nc" id="L142">    bar.setBounds(0, height * 0.95f, width, height * 0.05f);</span>
+<span class="nc" id="L143">    infoTable.setBounds(0, height * 0.95f, width, height * 0.05f);</span>
+<span class="nc" id="L144">    titleTable.setBounds(0, height * 0.95f, width, height * 0.05f);</span>
 
-<span class="nc" id="L136">    float counterTableWidth = height * 0.27f;</span>
-<span class="nc" id="L137">    buildingCountersTableCell.width(counterTableWidth).height(height * 0.05f);</span>
-<span class="nc bnc" id="L138" title="All 2 branches missed.">    for (int i = 0; i &lt; buildingTypesCount; i++) {</span>
-<span class="nc" id="L139">      buildingCounterLabels[i].setFontScale(height * 0.0015f);</span>
-<span class="nc" id="L140">      buildingCounterCells[i].width(counterTableWidth * 0.5f).height(height * 0.025f);</span>
+<span class="nc" id="L146">    float counterTableWidth = height * 0.27f;</span>
+<span class="nc" id="L147">    buildingCountersTableCell.width(counterTableWidth).height(height * 0.05f);</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">    for (int i = 0; i &lt; buildingTypesCount; i++) {</span>
+<span class="nc" id="L149">      buildingCounterLabels[i].setFontScale(height * 0.0015f);</span>
+<span class="nc" id="L150">      buildingCounterCells[i].width(counterTableWidth * 0.5f).height(height * 0.025f);</span>
     }
 
-<span class="nc" id="L143">    timerLabel.setFontScale(height * 0.002f);</span>
-<span class="nc" id="L144">    timerLabelCell.width(height * 0.08f).height(height * 0.05f);</span>
-<span class="nc" id="L145">    timerLabelCell.padLeft(height * 0.005f);</span>
-<span class="nc" id="L146">    scoreLabel.setFontScale(height * 0.002f);</span>
-<span class="nc" id="L147">    scoreLabelCell.width(height * 0.04f).height(height * 0.05f);</span>
-<span class="nc" id="L148">    scoreLabelCell.padLeft(Math.min(width, height * 2) * 0.14f);</span>
-<span class="nc" id="L149">    pauseButtonCell.width(height * 0.03f).height(height * 0.03f)</span>
-<span class="nc" id="L150">    .padLeft(height * 0.01f).padRight(height * 0.01f);</span>
+<span class="nc" id="L153">    timerLabel.setFontScale(height * 0.002f);</span>
+<span class="nc" id="L154">    timerLabelCell.width(height * 0.08f).height(height * 0.05f);</span>
+<span class="nc" id="L155">    timerLabelCell.padLeft(height * 0.005f);</span>
 
-<span class="nc" id="L152">    titleLabel.setFontScale(height * 0.003f);</span>
-<span class="nc" id="L153">  }</span>
+<span class="nc" id="L157">    scoreLabel.setFontScale(height * 0.002f);</span>
+<span class="nc" id="L158">    scoreLabelCell.width(height * 0.04f).height(height * 0.05f);</span>
+<span class="nc" id="L159">    scoreLabelCell.padLeft(height * 0.05f);</span>
+
+<span class="nc" id="L161">    pauseButtonCell.width(height * 0.03f).height(height * 0.03f).padLeft(height * 0.01f).padRight(height * 0.01f);</span>
+
+<span class="nc" id="L163">    settingsButtonCell.width(height * 0.03f).height(height * 0.03f).padLeft(height * 0.01f).padRight(height * 0.01f);</span>
+
+<span class="nc" id="L165">    titleLabel.setFontScale(height * 0.003f);</span>
+<span class="nc" id="L166">  }</span>
 
   public void reset() {
-<span class="nc" id="L156">    pauseButtonCell.setActor(playImage);</span>
-<span class="nc" id="L157">  }</span>
+<span class="nc" id="L169">    pauseButtonCell.setActor(playImage);</span>
+<span class="nc" id="L170">  }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

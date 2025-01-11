@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BuildingManager.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">io.github.unisim.building</a> &gt; <span class="el_source">BuildingManager.java</span></div><h1>BuildingManager.java</h1><pre class="source lang-java linenums">package io.github.unisim.building;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -10,7 +11,6 @@ import io.github.unisim.GameState;
 import io.github.unisim.Point;
 import io.github.unisim.event.Event;
 import io.github.unisim.world.World;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,11 +26,23 @@ public class BuildingManager {
   private Matrix4 isoTransform;
   private Building previewBuilding;
   private World world;
+<span class="nc" id="L29">  private float timePassed = 0f;</span>
 
-<span class="nc" id="L30">  public BuildingManager(Matrix4 isoTransform, World world) {</span>
-<span class="nc" id="L31">    this.isoTransform = isoTransform;</span>
-<span class="nc" id="L32">    this.world = world;</span>
-<span class="nc" id="L33">  }</span>
+  // Records what buildings should be near other buildings.
+<span class="nc" id="L32">  private Map&lt;BuildingType, BuildingType[]&gt; buildingTypesProximity = new HashMap&lt;&gt;();</span>
+
+  /**A record of how far away each building is from each building placed on the map.   */
+<span class="nc" id="L35">  private ArrayList&lt;ArrayList&lt;Float&gt;&gt; buildingsDistance = new ArrayList&lt;&gt;();</span>
+
+  /**
+   * @param isoTransform The isometric transformation matrix needed for drawing textures.
+   * @param world The world of the game.
+   */
+<span class="nc" id="L41">  public BuildingManager(Matrix4 isoTransform, World world) {</span>
+<span class="nc" id="L42">    this.isoTransform = isoTransform;</span>
+<span class="nc" id="L43">    this.world = world;</span>
+<span class="nc" id="L44">    buildingTypeMatrix();</span>
+<span class="nc" id="L45">  }</span>
 
   /**
    * Determines if a region on the map is composed solely of buildable tiles.
@@ -41,46 +53,46 @@ public class BuildingManager {
    * @return - true if the region is made solely of buildable tiles, false otherwise
    */
   public boolean isBuildable(Point btmLeft, Point topRight, TiledMapTileLayer tileLayer) {
-<span class="nc" id="L44">    boolean buildable = true;</span>
+<span class="nc" id="L56">    boolean buildable = true;</span>
     // we iterate over each tile within the search region and check
     // for any non-buildable tiles.
     // additionally, we return false every time if the game is paused
     // (buildings may not be placed while the game is paused).
-<span class="nc bnc" id="L49" title="All 4 branches missed.">    for (int x = btmLeft.x; x &lt;= topRight.x &amp;&amp; buildable; x++) {</span>
-<span class="nc bnc" id="L50" title="All 4 branches missed.">        for (int y = btmLeft.y; y &lt;= topRight.y &amp;&amp; buildable; y++) {</span>
-<span class="nc" id="L51">            Cell currentCell = tileLayer.getCell(x, y);</span>
-<span class="nc bnc" id="L52" title="All 2 branches missed.">            if (currentCell == null) {</span>
-<span class="nc" id="L53">                buildable = false;</span>
-<span class="nc" id="L54">                continue;</span>
+<span class="nc bnc" id="L61" title="All 4 branches missed.">    for (int x = btmLeft.x; x &lt;= topRight.x &amp;&amp; buildable; x++) {</span>
+<span class="nc bnc" id="L62" title="All 4 branches missed.">        for (int y = btmLeft.y; y &lt;= topRight.y &amp;&amp; buildable; y++) {</span>
+<span class="nc" id="L63">            Cell currentCell = tileLayer.getCell(x, y);</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">            if (currentCell == null) {</span>
+<span class="nc" id="L65">                buildable = false;</span>
+<span class="nc" id="L66">                continue;</span>
             }
 
-<span class="nc" id="L57">            TiledMapTile currentTile = currentCell.getTile();</span>
-<span class="nc bnc" id="L58" title="All 2 branches missed.">            if (!tileBuildable(currentTile)) {</span>
-<span class="nc" id="L59">                buildable = false;</span>
+<span class="nc" id="L69">            TiledMapTile currentTile = currentCell.getTile();</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">            if (!tileBuildable(currentTile)) {</span>
+<span class="nc" id="L71">                buildable = false;</span>
             }
         }
     }
-<span class="nc bnc" id="L63" title="All 4 branches missed.">    if (!buildable || GameState.paused) {</span>
-<span class="nc" id="L64">      return false;</span>
+<span class="nc bnc" id="L75" title="All 4 branches missed.">    if (!buildable || GameState.paused) {</span>
+<span class="nc" id="L76">      return false;</span>
     }
 
     // Next, iterate over the current buildings to see if any intersect the new building
-<span class="nc bnc" id="L68" title="All 2 branches missed.">    for (Building building : buildings) {</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">    for (Building building : buildings) {</span>
       // Use the seperating axis theorem to detect building overlap
-<span class="nc bnc" id="L70" title="All 8 branches missed.">      if (!(building.location.x &gt; topRight.x</span>
+<span class="nc bnc" id="L82" title="All 8 branches missed.">      if (!(building.location.x &gt; topRight.x</span>
           || building.location.x + building.size.x - 1 &lt; btmLeft.x
           || building.location.y &gt; topRight.y
           || building.location.y + building.size.y - 1 &lt; btmLeft.y)
       ) {
-<span class="nc bnc" id="L75" title="All 2 branches missed.">        if (building == previewBuilding) {</span>
-<span class="nc" id="L76">          continue;</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        if (building == previewBuilding) {</span>
+<span class="nc" id="L88">          continue;</span>
         }
-<span class="nc" id="L78">        buildable = false;</span>
-<span class="nc" id="L79">        break;</span>
+<span class="nc" id="L90">        buildable = false;</span>
+<span class="nc" id="L91">        break;</span>
       }
-<span class="nc" id="L81">    }</span>
+<span class="nc" id="L93">    }</span>
 
-<span class="nc" id="L83">    return buildable;</span>
+<span class="nc" id="L95">    return buildable;</span>
   }
 
   /**
@@ -90,7 +102,7 @@ public class BuildingManager {
    * @return - true if the tile is buildable, false otherwise
    */
   private static boolean tileBuildable(TiledMapTile tile) {
-<span class="nc" id="L93">    return GameState.buildableTiles.contains(tile.getId());</span>
+<span class="nc" id="L105">    return GameState.buildableTiles.contains(tile.getId());</span>
   }
 
   /**
@@ -99,17 +111,13 @@ public class BuildingManager {
    * @param batch - the SpriteBatch in which to draw
    */
   public void render(SpriteBatch batch) {
-<span class="nc bnc" id="L102" title="All 2 branches missed.">    for (Building building : buildings) {</span>
-<span class="nc" id="L103">      drawBuilding(building, batch);</span>
-<span class="nc" id="L104">    }</span>
-<span class="nc" id="L105">  }</span>
-
-//  public boolean buildingTypeExists(BuildingType buildingType) {
-//      if (buildingCounts.containsKey(buildingType) &amp;&amp; buildingCounts.get(buildingType) &gt; 0) {
-//          return true;
-//      }
-//      return false;
-//  }
+<span class="nc bnc" id="L114" title="All 2 branches missed.">    for (Building building : buildings) {</span>
+<span class="nc" id="L115">      drawBuilding(building, batch);</span>
+<span class="nc" id="L116">    }</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">    if (!GameState.paused) {</span>
+<span class="nc" id="L118">      updateScorePerSecond();</span>
+    }
+<span class="nc" id="L120">  }</span>
 
   /**
    * Handle placement of a building into the world by determining
@@ -123,61 +131,62 @@ public class BuildingManager {
     // gets rendered in top-down order
     // Start by calculating the 'height' values for the left and right corners of the new building
     // where height is the taxi-cab distance from the top of the map
-<span class="nc" id="L126">    int buildingHeightLeftSide = building.location.y - building.location.x;</span>
-<span class="nc" id="L127">    int buildingHeightRightSide = buildingHeightLeftSide + building.size.y - building.size.x + 1;</span>
-<span class="nc" id="L128">    Point leftCorner = building.location;</span>
+<span class="nc" id="L134">    int buildingHeightLeftSide = building.location.y - building.location.x;</span>
+<span class="nc" id="L135">    int buildingHeightRightSide = buildingHeightLeftSide + building.size.y - building.size.x + 1;</span>
+<span class="nc" id="L136">    Point leftCorner = building.location;</span>
 
     // Move up the array, until the pointer is in the correct place for the new building so the
     // array is sorted by height
-<span class="nc" id="L132">    int i = 0;</span>
-<span class="nc bnc" id="L133" title="All 2 branches missed.">    while (i &lt; buildings.size()) {</span>
-<span class="nc" id="L134">      Building other = buildings.get(i);</span>
-<span class="nc" id="L135">      int otherHeightLeftSide = other.location.y - other.location.x;</span>
+<span class="nc" id="L140">    int i = 0;</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">    while (i &lt; buildings.size()) {</span>
+<span class="nc" id="L142">      Building other = buildings.get(i);</span>
+<span class="nc" id="L143">      int otherHeightLeftSide = other.location.y - other.location.x;</span>
       // Calculate the taxi-cab distance between the new building's left corner and the other
       // building's right corner
-<span class="nc" id="L138">      int leftDistance = Math.abs(leftCorner.x - other.location.x - other.size.x + 1)</span>
-<span class="nc" id="L139">          + Math.abs(leftCorner.y - other.location.y - other.size.y + 1);</span>
+<span class="nc" id="L146">      int leftDistance = Math.abs(leftCorner.x - other.location.x - other.size.x + 1)</span>
+<span class="nc" id="L147">          + Math.abs(leftCorner.y - other.location.y - other.size.y + 1);</span>
       // If the distance is small, compare the height of the new buildin'g left corner to the
       // height of the other buildings right corner
-<span class="nc bnc" id="L142" title="All 2 branches missed.">      if (leftDistance &lt; Math.min(building.size.x + building.size.y, other.size.x + other.size.y)) {</span>
-<span class="nc" id="L143">        int otherHeightRightSide = otherHeightLeftSide + other.size.y - other.size.x + 1;</span>
-<span class="nc bnc" id="L144" title="All 2 branches missed.">        if (otherHeightRightSide &gt; buildingHeightLeftSide) {</span>
-<span class="nc" id="L145">          i++;</span>
-<span class="nc" id="L146">          continue;</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">      if (leftDistance &lt; Math.min(building.size.x + building.size.y, other.size.x + other.size.y)) {</span>
+<span class="nc" id="L151">        int otherHeightRightSide = otherHeightLeftSide + other.size.y - other.size.x + 1;</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">        if (otherHeightRightSide &gt; buildingHeightLeftSide) {</span>
+<span class="nc" id="L153">          i++;</span>
+<span class="nc" id="L154">          continue;</span>
         } else {
           break;
         }
       }
       // Otherwise, compare the distance of the new building's right corner to the other building's
       // left corner
-<span class="nc bnc" id="L153" title="All 2 branches missed.">      if (otherHeightLeftSide &gt; buildingHeightRightSide) {</span>
-<span class="nc" id="L154">        i++;</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">      if (otherHeightLeftSide &gt; buildingHeightRightSide) {</span>
+<span class="nc" id="L162">        i++;</span>
       } else {
         break;
       }
-<span class="nc" id="L158">    }</span>
-<span class="nc" id="L159">    buildings.add(i, building);</span>
-<span class="nc" id="L160">    updateCounters(building);</span>
-<span class="nc" id="L161">    updateScore(building);</span>
-<span class="nc" id="L162">    return i;</span>
+<span class="nc" id="L166">    }</span>
+<span class="nc" id="L167">    buildings.add(i, building);</span>
+<span class="nc" id="L168">    updateCounters(building);</span>
+<span class="nc" id="L169">    updateScoreEvent(building);</span>
+<span class="nc" id="L170">    updateDistances(building);</span>
+<span class="nc" id="L171">    return i;</span>
   }
 
     /**
      * Updates the score if a building has been placed on the map, that is needed
      * for the current event.
      *
-     * @param building - A reference to the building object that was placed
+     * @param building - A reference to the building object that was placed.
      */
-  private void updateScore(Building building) {
-<span class="nc bnc" id="L172" title="All 2 branches missed.">      if (building == previewBuilding) {</span>
-<span class="nc" id="L173">          return;</span>
+  private void updateScoreEvent(Building building) {
+<span class="nc bnc" id="L181" title="All 2 branches missed.">      if (building == previewBuilding) {</span>
+<span class="nc" id="L182">          return;</span>
       }
-<span class="nc" id="L175">      Event currentEvent = world.getCurrentEvent();</span>
-<span class="nc bnc" id="L176" title="All 2 branches missed.">      if (currentEvent != null &amp;&amp;</span>
-<span class="nc bnc" id="L177" title="All 2 branches missed.">          currentEvent.getBuildingType() == building.type) {</span>
-<span class="nc" id="L178">          world.updateScore(currentEvent.getAdjustment());</span>
+<span class="nc" id="L184">      Event currentEvent = world.getCurrentEvent();</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">      if (currentEvent != null &amp;&amp;</span>
+<span class="nc bnc" id="L186" title="All 2 branches missed.">          currentEvent.getBuildingType() == building.type) {</span>
+<span class="nc" id="L187">          world.updateScore(currentEvent.getAdjustment());</span>
       }
-<span class="nc" id="L180">  }</span>
+<span class="nc" id="L189">  }</span>
 
   /**
    * Creates a counter for the building's type if it is the first to be placed,
@@ -186,15 +195,16 @@ public class BuildingManager {
    * @param building - A reference to the building object that was placed
    */
   private void updateCounters(Building building) {
-<span class="nc bnc" id="L189" title="All 2 branches missed.">    if (building == previewBuilding) {</span>
-<span class="nc" id="L190">      return;</span>
+<span class="nc bnc" id="L198" title="All 2 branches missed.">    if (building == previewBuilding) {</span>
+<span class="nc" id="L199">      return;</span>
     }
-<span class="nc bnc" id="L192" title="All 2 branches missed.">    if (!buildingCounts.containsKey(building.type)) {</span>
-<span class="nc" id="L193">      buildingCounts.put(building.type, 1);</span>
-<span class="nc" id="L194">      return;</span>
+
+<span class="nc bnc" id="L202" title="All 2 branches missed.">    if (!buildingCounts.containsKey(building.type)) {</span>
+<span class="nc" id="L203">      buildingCounts.put(building.type, 1);</span>
+<span class="nc" id="L204">      return;</span>
     }
-<span class="nc" id="L196">    buildingCounts.put(building.type, buildingCounts.get(building.type) + 1);</span>
-<span class="nc" id="L197">  }</span>
+<span class="nc" id="L206">    buildingCounts.put(building.type, buildingCounts.get(building.type) + 1);</span>
+<span class="nc" id="L207">  }</span>
 
   /**
    * Returns the number of buildings of a certain type that have been placed
@@ -204,10 +214,10 @@ public class BuildingManager {
    * @return - The number of buildings of that type that have been placed
    */
   public int getBuildingCount(BuildingType type) {
-<span class="nc bnc" id="L207" title="All 2 branches missed.">    if (!buildingCounts.containsKey(type)) {</span>
-<span class="nc" id="L208">      return 0;</span>
+<span class="nc bnc" id="L217" title="All 2 branches missed.">    if (!buildingCounts.containsKey(type)) {</span>
+<span class="nc" id="L218">      return 0;</span>
     }
-<span class="nc" id="L210">    return buildingCounts.get(type);</span>
+<span class="nc" id="L220">    return buildingCounts.get(type);</span>
   }
 
   /**
@@ -216,14 +226,14 @@ public class BuildingManager {
    * @param previewBuilding - The building to draw as a preview
    */
   public void setPreviewBuilding(Building previewBuilding) {
-<span class="nc bnc" id="L219" title="All 2 branches missed.">    if (this.previewBuilding != null) {</span>
-<span class="nc" id="L220">      buildings.remove(this.previewBuilding);</span>
+<span class="nc bnc" id="L229" title="All 2 branches missed.">    if (this.previewBuilding != null) {</span>
+<span class="nc" id="L230">      buildings.remove(this.previewBuilding);</span>
     }
-<span class="nc" id="L222">    this.previewBuilding = previewBuilding;</span>
-<span class="nc bnc" id="L223" title="All 2 branches missed.">    if (previewBuilding != null) {</span>
-<span class="nc" id="L224">      placeBuilding(previewBuilding);</span>
+<span class="nc" id="L232">    this.previewBuilding = previewBuilding;</span>
+<span class="nc bnc" id="L233" title="All 2 branches missed.">    if (previewBuilding != null) {</span>
+<span class="nc" id="L234">      placeBuilding(previewBuilding);</span>
     }
-<span class="nc" id="L226">  }</span>
+<span class="nc" id="L236">  }</span>
 
   /**
    * Draw the building texture at the position of the mouse cursor
@@ -233,40 +243,171 @@ public class BuildingManager {
    * @param batch - the SpriteBatch to draw into
    */
   public void drawBuilding(Building building, SpriteBatch batch) {
-<span class="nc" id="L236">    Vector3 btmLeftPos = new Vector3(</span>
+<span class="nc" id="L246">    Vector3 btmLeftPos = new Vector3(</span>
         (float) building.location.x + (
-<span class="nc bnc" id="L238" title="All 2 branches missed.">          building.flipped ? building.textureOffset.x : building.textureOffset.x</span>
+<span class="nc bnc" id="L248" title="All 2 branches missed.">          building.flipped ? building.textureOffset.x : building.textureOffset.x</span>
         ),
         (float) building.location.y + (
-<span class="nc bnc" id="L241" title="All 2 branches missed.">          building.flipped ? building.textureOffset.y : building.textureOffset.y</span>
+<span class="nc bnc" id="L251" title="All 2 branches missed.">          building.flipped ? building.textureOffset.y : building.textureOffset.y</span>
         ),
         0f
     );
-<span class="nc" id="L245">    Vector3 btmRightPos = new Vector3(btmLeftPos).add(new Vector3(building.size.x - 1, 0f, 0f));</span>
-<span class="nc" id="L246">    btmLeftPos.mul(isoTransform);</span>
-<span class="nc" id="L247">    btmRightPos.mul(isoTransform);</span>
-<span class="nc" id="L248">    batch.draw(</span>
+<span class="nc" id="L255">    Vector3 btmRightPos = new Vector3(btmLeftPos).add(new Vector3(building.size.x - 1, 0f, 0f));</span>
+<span class="nc" id="L256">    btmLeftPos.mul(isoTransform);</span>
+<span class="nc" id="L257">    btmRightPos.mul(isoTransform);</span>
+<span class="nc" id="L258">    batch.draw(</span>
         building.texture,
         btmLeftPos.x, btmRightPos.y,
-<span class="nc" id="L251">        building.texture.getWidth() * building.textureScale,</span>
-<span class="nc" id="L252">        building.texture.getHeight() * building.textureScale,</span>
-<span class="nc" id="L253">        0, 0, building.texture.getWidth(), building.texture.getHeight(),</span>
+<span class="nc" id="L261">        building.texture.getWidth() * building.textureScale,</span>
+<span class="nc" id="L262">        building.texture.getHeight() * building.textureScale,</span>
+<span class="nc" id="L263">        0, 0, building.texture.getWidth(), building.texture.getHeight(),</span>
         building.flipped, false
     );
-<span class="nc" id="L256">  }</span>
+<span class="nc" id="L266">  }</span>
 
-    /**
-     * Calculates the distance between the edges of two buildings.
-     * @param b1 - The first building
-     * @param b2 - The second building
-     * @return The distance between the edges of b1, b2.
-     */
-  public static float distance(Building b1, Building b2) {
-<span class="nc" id="L265">      float xdistance = (Math.abs((b1.location.x + (b1.size.x / 2f)) - (b2.location.x + (b2.size.x / 2f)))</span>
-                         - ((b1.size.x / 2f) + (b2.size.x / 2f)));
-<span class="nc" id="L267">      float ydistance = (Math.abs((b1.location.y + (b1.size.y / 2f)) - (b2.location.y + (b2.size.y / 2f)))</span>
-                         - ((b1.size.y / 2f) + (b2.size.y / 2f)));
-<span class="nc" id="L269">      return ((float) Math.sqrt(Math.pow(xdistance, 2) + Math.pow(ydistance, 2)));</span>
+  /**
+   * Gives updates to score every second. Called in a render method.
+   */
+  public void updateScorePerSecond() {
+<span class="nc" id="L272">    timePassed += Gdx.graphics.getDeltaTime();</span>
+<span class="nc bnc" id="L273" title="All 2 branches missed.">    if (timePassed &gt;= 1.0f) {</span>
+<span class="nc" id="L274">      timePassed -= 1.0f;</span>
+
+      // Change score proportionally to the ratio of buildings to each other
+<span class="nc" id="L277">      float adj1 = 0.8f; // When variance below this, the score increases (approx +adj1 per second with perfect variance)</span>
+<span class="nc" id="L278">      float adj2 = 6f; // Scales the change.</span>
+<span class="nc" id="L279">      float scoreChange = -(variance() - adj1) / adj2;</span>
+<span class="nc" id="L280">      world.updateScore(scoreChange);</span>
+
+      // Change score depending on the average density.
+<span class="nc" id="L283">      float adj3 = 0.3f; // When density below this, score decreases, otherwise increases.</span>
+<span class="nc" id="L284">      float overallDensity = density();</span>
+<span class="nc bnc" id="L285" title="All 2 branches missed.">      if (overallDensity &lt; adj3) {</span>
+<span class="nc" id="L286">        world.updateScore(-(1f-overallDensity) * 0.8f);</span>
+      }
+      else {
+<span class="nc" id="L289">        world.updateScore(0.5f);</span>
+      }
+    }
+<span class="nc" id="L292">  }</span>
+
+  /**
+   * Calculates the variance of the number of the buildings.
+   */
+  private float variance() {
+    // Calculates the mathematical mean.
+<span class="nc" id="L299">    float mean = 0f;</span>
+<span class="nc bnc" id="L300" title="All 2 branches missed.">    for (int i = 0; i &lt; BuildingType.values().length; i++) {</span>
+<span class="nc" id="L301">      mean += world.getBuildingCount(BuildingType.values()[i]);</span>
+    }
+<span class="nc" id="L303">    mean = mean / BuildingType.values().length;</span>
+
+    // Calculates the mathematical variance.
+<span class="nc" id="L306">    float variance = 0f;</span>
+<span class="nc bnc" id="L307" title="All 2 branches missed.">    for (int i = 0; i &lt; BuildingType.values().length; i++) {</span>
+<span class="nc" id="L308">      variance += (float)Math.pow(world.getBuildingCount(BuildingType.values()[i]) - mean, 2);</span>
+    }
+<span class="nc" id="L310">    variance = variance / BuildingType.values().length;</span>
+
+<span class="nc" id="L312">    return variance;</span>
   }
+
+  /**
+   * Calculates the average density around buildings across the map.
+   *
+   * @return The average density around buildings.
+   */
+  private float density() {
+<span class="nc" id="L321">    float radius = 30f; // Radius to check buildings in.</span>
+<span class="nc" id="L322">    float overallDensity = 0f;</span>
+<span class="nc" id="L323">    ArrayList&lt;Building&gt; mapBuildings = getMapBuildings();</span>
+
+    // Get the maximum average density
+<span class="nc" id="L326">    float averageSize = ((4f*4f) + (20f*12f) + (8f*12f) + (12f*11f) + (4f*5f)) / 5f; // Size of buildings in BuildingMenu</span>
+<span class="nc" id="L327">    float averageCount = (radius*radius) / averageSize;</span>
+
+    // Removes division by 0 errors.
+<span class="nc bnc" id="L330" title="All 2 branches missed.">    if (mapBuildings.isEmpty()) {</span>
+<span class="nc" id="L331">      return 0f;</span>
+    }
+
+    // Calculates density around each building.
+<span class="nc bnc" id="L335" title="All 2 branches missed.">    for (int i = 0; i &lt; mapBuildings.size(); i++) {</span>
+      // Gets neighbours, which contains the distances of buildings within the radius of building, that
+      // are not building itself.
+<span class="nc" id="L338">      ArrayList&lt;Float&gt; neighbours = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L339" title="All 2 branches missed.">      for (int j = 0; j &lt; buildingsDistance.get(i).size(); j++) {</span>
+<span class="nc bnc" id="L340" title="All 4 branches missed.">        if (buildingsDistance.get(i).get(j) &lt; radius &amp;&amp; !buildingsDistance.get(i).get(j).equals(0f)) {</span>
+<span class="nc" id="L341">          neighbours.add(buildingsDistance.get(i).get(j));</span>
+        }
+      }
+
+<span class="nc" id="L345">      float density = neighbours.size() / averageCount;</span>
+
+<span class="nc" id="L347">      overallDensity += density;</span>
+    }
+    // Averages the density.
+<span class="nc" id="L350">    overallDensity = overallDensity / mapBuildings.size();</span>
+<span class="nc" id="L351">    return overallDensity;</span>
+  }
+
+  /**
+   * Calculates distances of all buildings to each other, producing a distance matrix {@code buildingsDistance}.
+   *
+   * @param building The building to add distances of into {@code buildingsDistance}.
+   */
+  private void updateDistances(Building building) {
+<span class="nc bnc" id="L360" title="All 2 branches missed.">    if (building == previewBuilding) {</span>
+<span class="nc" id="L361">      return;</span>
+    }
+    // Remove previewBuilding from the list of buildings.
+<span class="nc" id="L364">    ArrayList&lt;Building&gt; cleanBuildings = getMapBuildings();</span>
+    // Calculates distance and adds into distance matrix.
+<span class="nc" id="L366">    buildingsDistance.add(cleanBuildings.indexOf(building), new ArrayList&lt;&gt;());</span>
+<span class="nc bnc" id="L367" title="All 2 branches missed.">    for (int i = 0; i &lt; cleanBuildings.size(); i++) {</span>
+<span class="nc" id="L368">      float distance = distance(cleanBuildings.get(i), building);</span>
+      // Ensures the (i,cleanBuildings.indexOf(building)) not added twice.
+<span class="nc bnc" id="L370" title="All 2 branches missed.">      if (i != cleanBuildings.indexOf(building)) {</span>
+<span class="nc" id="L371">        buildingsDistance.get(i).add(cleanBuildings.indexOf(building), distance);</span>
+      }
+<span class="nc" id="L373">      buildingsDistance.get(cleanBuildings.indexOf(building)).add(i, distance);</span>
+    }
+<span class="nc" id="L375">  }</span>
+
+  /**
+   * Creates and returns a new ArrayList of {@code buildings} without the {@code previewBuilding}.
+   *
+   * @return {@code buildings} without {@code previewBuilding}
+   */
+  private ArrayList&lt;Building&gt; getMapBuildings() {
+<span class="nc" id="L383">    ArrayList&lt;Building&gt; cleanBuildings= new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L384" title="All 2 branches missed.">    for (int i = 0; i &lt; buildings.size(); i++) {</span>
+<span class="nc bnc" id="L385" title="All 2 branches missed.">      if (buildings.get(i) != previewBuilding) {</span>
+<span class="nc" id="L386">        cleanBuildings.add(buildings.get(i));</span>
+      }
+    }
+<span class="nc" id="L389">    return cleanBuildings;</span>
+  }
+
+  /**
+   * Calculates the distance between the centres of two buildings. A helper function for updateDistances.
+   *
+   * @param b1 - The first building
+   * @param b2 - The second building
+   * @return The distance between the centres of b1, b2.
+   */
+  public static float distance(Building b1, Building b2) {
+<span class="nc" id="L400">    float xdistance = (Math.abs((b1.location.x + (b1.size.x / 2f)) - (b2.location.x + (b2.size.x / 2f))));</span>
+<span class="nc" id="L401">    float ydistance = (Math.abs((b1.location.y + (b1.size.y / 2f)) - (b2.location.y + (b2.size.y / 2f))));</span>
+<span class="nc" id="L402">    return ((float) Math.sqrt(Math.pow(xdistance, 2) + Math.pow(ydistance, 2)));</span>
+  }
+
+  private void buildingTypeMatrix() {
+<span class="nc" id="L406">    buildingTypesProximity.put(BuildingType.RECREATION, new BuildingType[]{BuildingType.RECREATION,BuildingType.FOOD});</span>
+<span class="nc" id="L407">    buildingTypesProximity.put(BuildingType.LEARNING, new BuildingType[]{BuildingType.LEARNING, BuildingType.ACCOMMODATION});</span>
+<span class="nc" id="L408">    buildingTypesProximity.put(BuildingType.ACCOMMODATION, new BuildingType[]{BuildingType.ACCOMMODATION, BuildingType.FOOD});</span>
+<span class="nc" id="L409">    buildingTypesProximity.put(BuildingType.HEALTH, new BuildingType[]{BuildingType.HEALTH});</span>
+<span class="nc" id="L410">    buildingTypesProximity.put(BuildingType.FOOD, new BuildingType[]{BuildingType.FOOD});</span>
+<span class="nc" id="L411">  }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

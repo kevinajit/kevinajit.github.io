@@ -23,102 +23,110 @@ public class GameScreen implements Screen {
   private InfoBar infoBar;
   private BuildingMenu buildingMenu;
   private EventBar eventBar;
+  private Leaderboard leaderboard;
   private AchievementBar achievementBar;
   private Timer timer;
   private Score score;
-<span class="nc" id="L29">  private InputProcessor uiInputProcessor = new UiInputProcessor(stage);</span>
+<span class="nc" id="L30">  private InputProcessor uiInputProcessor = new UiInputProcessor(stage);</span>
   private InputProcessor worldInputProcessor;
-<span class="nc" id="L31">  private InputMultiplexer inputMultiplexer = new InputMultiplexer();</span>
-<span class="nc" id="L32">  private GameOverMenu gameOverMenu = new GameOverMenu();</span>
+<span class="nc" id="L32">  private InputMultiplexer inputMultiplexer = new InputMultiplexer();</span>
+<span class="nc" id="L33">  private GameOverMenu gameOverMenu = new GameOverMenu();</span>
 
   /**
    * Constructor for the GameScreen.
    */
-<span class="nc" id="L37">  public GameScreen() {</span>
-<span class="nc" id="L38">    timer = new Timer(300_000);</span>
-<span class="nc" id="L39">    score = new Score(100);</span>
-<span class="nc" id="L40">    world = new World(score);</span>
-<span class="nc" id="L41">    worldInputProcessor = new WorldInputProcessor(world);</span>
-<span class="nc" id="L42">    infoBar = new InfoBar(stage, timer, score, world);</span>
-<span class="nc" id="L43">    buildingMenu = new BuildingMenu(stage, world);</span>
-<span class="nc" id="L44">    eventBar = new EventBar(stage, world);</span>
-<span class="nc" id="L45">    achievementBar = new AchievementBar(stage, world);</span>
+<span class="fc" id="L38">  public GameScreen() {</span>
+<span class="nc" id="L39">    timer = new Timer(300_000f);</span>
+<span class="nc" id="L40">    score = new Score(50);</span>
+<span class="nc" id="L41">    world = new World(score, timer);</span>
+<span class="nc" id="L42">    worldInputProcessor = new WorldInputProcessor(world);</span>
+<span class="nc" id="L43">    infoBar = new InfoBar(stage, timer, score, world);</span>
+<span class="nc" id="L44">    buildingMenu = new BuildingMenu(stage, world);</span>
+<span class="nc" id="L45">    eventBar = new EventBar(stage, world);</span>
+<span class="nc" id="L46">    leaderboard = new Leaderboard(stage, world);</span>
+<span class="nc" id="L47">    achievementBar = new AchievementBar(stage, world);</span>
 
-<span class="nc" id="L47">    inputMultiplexer.addProcessor(GameState.fullscreenInputProcessor);</span>
-<span class="nc" id="L48">    inputMultiplexer.addProcessor(stage);</span>
-<span class="nc" id="L49">    inputMultiplexer.addProcessor(uiInputProcessor);</span>
-<span class="nc" id="L50">    inputMultiplexer.addProcessor(worldInputProcessor);</span>
-<span class="nc" id="L51">  }</span>
+<span class="nc" id="L49">    inputMultiplexer.addProcessor(GameState.fullscreenInputProcessor);</span>
+<span class="nc" id="L50">    inputMultiplexer.addProcessor(stage);</span>
+<span class="nc" id="L51">    inputMultiplexer.addProcessor(uiInputProcessor);</span>
+<span class="nc" id="L52">    inputMultiplexer.addProcessor(worldInputProcessor);</span>
+<span class="nc" id="L53">  }</span>
 
   @Override
   public void show() {
-<span class="nc" id="L55">  }</span>
+<span class="nc" id="L57">  }</span>
 
   @Override
   public void render(float delta) {
-<span class="nc" id="L59">    world.render();</span>
-<span class="nc" id="L60">    float dt = Gdx.graphics.getDeltaTime();</span>
-<span class="nc bnc" id="L61" title="All 4 branches missed.">    if (!GameState.paused &amp;&amp; !GameState.gameOver) {</span>
-<span class="nc bnc" id="L62" title="All 2 branches missed.">      if (!timer.tick(dt * 1000)) {</span>
-<span class="nc" id="L63">        GameState.gameOver = true;</span>
-<span class="nc" id="L64">        Gdx.input.setInputProcessor(gameOverMenu.getInputProcessor());</span>
+<span class="nc" id="L61">    world.render();</span>
+<span class="nc" id="L62">    float dt = Gdx.graphics.getDeltaTime();</span>
+<span class="nc bnc" id="L63" title="All 4 branches missed.">    if (!GameState.paused &amp;&amp; !GameState.gameOver) {</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">      if (!timer.tick(dt * 1000)) {</span>
+<span class="nc" id="L65">        GameState.gameOver = true;</span>
+<span class="nc" id="L66">        Gdx.input.setInputProcessor(gameOverMenu.getInputProcessor());</span>
       }
     }
-<span class="nc" id="L67">    stage.act(dt);</span>
-<span class="nc" id="L68">    infoBar.update();</span>
-<span class="nc" id="L69">    buildingMenu.update();</span>
-<span class="nc" id="L70">    eventBar.update();</span>
-<span class="nc" id="L71">    achievementBar.update();</span>
-<span class="nc" id="L72">    stage.draw();</span>
-<span class="nc bnc" id="L73" title="All 2 branches missed.">    if (GameState.gameOver) {</span>
-<span class="nc" id="L74">      world.zoom((world.getMaxZoom() - world.getZoom()) * 2f);</span>
-<span class="nc" id="L75">      world.pan((90 - world.getCameraPos().x) / 10, -world.getCameraPos().y / 10);</span>
-<span class="nc" id="L76">      eventBar.setVisible(false);</span>
-<span class="nc" id="L77">      achievementBar.setVisible(false);</span>
-<span class="nc" id="L78">      gameOverMenu.render(delta);</span>
+<span class="nc" id="L69">    stage.act(dt);</span>
+<span class="nc" id="L70">    infoBar.update();</span>
+<span class="nc" id="L71">    buildingMenu.update();</span>
+<span class="nc" id="L72">    eventBar.update();</span>
+<span class="nc" id="L73">    achievementBar.update();</span>
+<span class="nc" id="L74">    stage.draw();</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">    if (GameState.gameOver) {</span>
+<span class="nc" id="L76">      leaderboard.show(stage, delta);</span>
+<span class="nc" id="L77">      leaderboard.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());</span>
+<span class="nc" id="L78">      stage.draw();</span>
+<span class="nc" id="L79">      world.zoom((world.getMaxZoom() - world.getZoom()) * 2f);</span>
+<span class="nc" id="L80">      world.pan((90 - world.getCameraPos().x) / 10, -world.getCameraPos().y / 10);</span>
+<span class="nc" id="L81">      eventBar.setVisible(false);</span>
+<span class="nc" id="L82">      achievementBar.setVisible(false);</span>
+<span class="nc" id="L83">      gameOverMenu.render(delta);</span>
     }
-<span class="nc" id="L80">  }</span>
+<span class="nc" id="L85">  }</span>
 
   @Override
   public void resize(int width, int height) {
-<span class="nc" id="L84">    world.resize(width, height);</span>
-<span class="nc" id="L85">    stage.getViewport().update(width, height, true);</span>
-<span class="nc" id="L86">    infoBar.resize(width, height);</span>
-<span class="nc" id="L87">    buildingMenu.resize(width, height);</span>
-<span class="nc" id="L88">    eventBar.resize(width, height);</span>
-<span class="nc" id="L89">    achievementBar.resize(width, height);</span>
-<span class="nc" id="L90">    gameOverMenu.resize(width, height);</span>
-<span class="nc" id="L91">  }</span>
+<span class="nc" id="L89">    world.resize(width, height);</span>
+<span class="nc" id="L90">    stage.getViewport().update(width, height, true);</span>
+<span class="nc" id="L91">    infoBar.resize(width, height);</span>
+<span class="nc" id="L92">    buildingMenu.resize(width, height);</span>
+<span class="nc" id="L93">    eventBar.resize(width, height);</span>
+<span class="nc" id="L94">    leaderboard.resize(width, height);</span>
+<span class="nc" id="L95">    achievementBar.resize(width, height);</span>
+<span class="nc" id="L96">    gameOverMenu.resize(width, height);</span>
+<span class="nc" id="L97">  }</span>
 
   @Override
   public void pause() {
-<span class="nc" id="L95">  }</span>
+<span class="nc" id="L101">  }</span>
 
   @Override
   public void resume() {
-<span class="nc" id="L99">    Gdx.input.setInputProcessor(inputMultiplexer);</span>
+<span class="nc" id="L105">    Gdx.input.setInputProcessor(inputMultiplexer);</span>
 
-<span class="nc bnc" id="L101" title="All 2 branches missed.">    if (GameState.gameOver) {</span>
-<span class="nc" id="L102">      GameState.gameOver = false;</span>
-<span class="nc" id="L103">      GameState.paused = false;</span>
-<span class="nc" id="L104">      timer.reset();</span>
-<span class="nc" id="L105">      score.reset();</span>
-<span class="nc" id="L106">      world.reset();</span>
-<span class="nc" id="L107">      infoBar.reset();</span>
-<span class="nc" id="L108">      buildingMenu.reset();</span>
-<span class="nc" id="L109">      eventBar.reset();</span>
-<span class="nc" id="L110">      achievementBar.reset();</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">    if (GameState.gameOver) {</span>
+<span class="nc" id="L108">      GameState.gameOver = false;</span>
+<span class="nc" id="L109">      GameState.paused = false;</span>
+<span class="nc" id="L110">      timer.reset();</span>
+<span class="nc" id="L111">      score.reset();</span>
+<span class="nc" id="L112">      world.reset();</span>
+<span class="nc" id="L113">      infoBar.reset();</span>
+<span class="nc" id="L114">      buildingMenu.reset();</span>
+<span class="nc" id="L115">      eventBar.reset();</span>
+<span class="nc" id="L116">      achievementBar.reset();</span>
+<span class="nc" id="L117">      leaderboard.reset();</span>
+<span class="nc" id="L118">      leaderboard = new Leaderboard(stage, world);</span>
     }
-<span class="nc" id="L112">  }</span>
+<span class="nc" id="L120">  }</span>
 
   @Override
   public void hide() {
-<span class="nc" id="L116">  }</span>
+<span class="nc" id="L124">  }</span>
 
   @Override
   public void dispose() {
-<span class="nc" id="L120">    world.dispose();</span>
-<span class="nc" id="L121">    stage.dispose();</span>
-<span class="nc" id="L122">  }</span>
+<span class="nc" id="L128">    world.dispose();</span>
+<span class="nc" id="L129">    stage.dispose();</span>
+<span class="nc" id="L130">  }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

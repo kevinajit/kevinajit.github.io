@@ -8,111 +8,150 @@ import io.github.unisim.building.BuildingType;
 import io.github.unisim.world.World;
 import java.util.ArrayList;
 
+/**
+ * Manages the achievements accessible to the player, and the common methods.
+ */
 public class AchievementManager {
-    // achievements possible to achieve
-<span class="nc" id="L13">    private ArrayList&lt;Achievement&gt; achievements = new ArrayList&lt;&gt;();</span>
-    // undisplayed achieved achievements
-    //private ArrayList&lt;Achievement&gt; undisplayedAchievements;
-    // current displayed achievement
+<span class="fc" id="L15">    private ArrayList&lt;Achievement&gt; achievements = new ArrayList&lt;&gt;();</span>
     private Achievement currentAchievement;
-    // displayed achievements
-    //private ArrayList&lt;Achievement&gt; achievedAchievements;
 
-<span class="nc" id="L21">    private ArrayList&lt;Achievement&gt; displayQueue = new ArrayList&lt;&gt;();</span>
-
+    // The queue of achievements waiting to be displayed.
+<span class="fc" id="L19">    private ArrayList&lt;Achievement&gt; displayQueue = new ArrayList&lt;&gt;();</span>
 
     private World world;
     private Timer displayTimer;
+    private Image achievementImage;
 
-<span class="nc" id="L27">    public AchievementManager(World world) {</span>
-<span class="nc" id="L28">        displayTimer = new Timer(10_000);</span>
-<span class="nc" id="L29">        this.world = world;</span>
+    /**
+     * Adds the achievements to the list possible to achieve by the player. Sets the display timer for the initial
+     * welcome message to the player.
+     */
+<span class="fc" id="L29">    public AchievementManager(World world) {</span>
+<span class="fc" id="L30">        displayTimer = new Timer(10_000);</span>
+<span class="fc" id="L31">        this.world = world;</span>
+<span class="fc" id="L32">        achievementImage = new Image(new Texture(&quot;achievements/trophy.png&quot;));</span>
 
-<span class="nc" id="L31">        achievements.add(new Achievement(&quot;Welcome!&quot;,</span>
+        // The initial message to display to the user when the game starts.
+<span class="fc" id="L35">        achievements.add(new Achievement(&quot;Welcome!&quot;,</span>
             &quot;Increase score to win the game!&quot;,
-<span class="nc" id="L33">            new Image(new Texture(Gdx.files.internal(&quot;buildings/accommodation.png&quot;))),</span>
+            achievementImage,
             0,
             new WelcomeRequirement()));
-<span class="nc" id="L36">        displayQueue.add(achievements.get(0));</span>
+<span class="fc" id="L40">        displayQueue.add(achievements.get(0));</span>
 
-<span class="nc" id="L38">        achievements.add(new Achievement(&quot;High Achiever&quot;,</span>
+        // Adds possible achievements to achieve
+
+<span class="fc" id="L44">        achievements.add(new Achievement(&quot;High Achiever&quot;,</span>
             &quot;You've maintained a high score for over a minute!&quot;,
-<span class="nc" id="L40">            new Image(new Texture(Gdx.files.internal(&quot;achievements/trophy.png&quot;))),</span>
+            achievementImage,
             10,
             new MaintainScoreRequirement(60_000f, 80f)));
-<span class="nc" id="L43">        achievements.add(new Achievement(&quot;Maximalist&quot;,</span>
+<span class="fc" id="L49">        achievements.add(new Achievement(&quot;Maximalist&quot;,</span>
             &quot;You've placed 20 buildings!&quot;,
-<span class="nc" id="L45">            new Image(new Texture(Gdx.files.internal(&quot;achievements/trophy.png&quot;))),</span>
+            achievementImage,
             10,
-<span class="nc" id="L47">            new BuildingPlacementRequirement(BuildingType.values(), 20)));</span>
-<span class="nc" id="L48">        achievements.add(new Achievement(&quot;Academic weapon&quot;,</span>
+<span class="fc" id="L53">            new BuildingPlacementRequirement(BuildingType.values(), 20)));</span>
+<span class="fc" id="L54">        achievements.add(new Achievement(&quot;Academic weapon&quot;,</span>
             &quot;Your students can work hard and do well!&quot;,
-<span class="nc" id="L50">            new Image(new Texture(Gdx.files.internal(&quot;buildings/library.png&quot;))),</span>
+            achievementImage,
             10,
             new BuildingPlacementRequirement(new BuildingType[]{BuildingType.LEARNING}, 5)));
+<span class="fc" id="L59">        achievements.add(new Achievement(&quot;Slacker&quot;,</span>
+            &quot;You've placed 0 buildings! Is this even a university?&quot;,
+            achievementImage,
+            1,
+<span class="fc" id="L63">            new BuildingPlacementRequirement(BuildingType.values(), 0, 500)));</span>
+<span class="fc" id="L64">        achievements.add(new Achievement(&quot;Minimalist&quot;,</span>
+            &quot;You've only placed 5 buildings!&quot;,
+            achievementImage,
+            10,
+<span class="fc" id="L68">            new BuildingPlacementRequirement(BuildingType.values(), 5, 500)));</span>
 
-        // add achievements in
-<span class="nc" id="L55">    }</span>
+<span class="fc" id="L70">    }</span>
 
     public Achievement getCurrentAchievement() {
-<span class="nc" id="L58">        return currentAchievement;</span>
+<span class="nc" id="L73">        return currentAchievement;</span>
     }
 
-    public boolean displaying() {
-<span class="nc bnc" id="L62" title="All 2 branches missed.">        if (currentAchievement != null) {</span>
-<span class="nc" id="L63">            return true;</span>
+  /**
+   * @return True if the there is an achievement currently being displayed, false otherwise.
+   */
+  public boolean displaying() {
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        if (currentAchievement != null) {</span>
+<span class="fc" id="L81">            return true;</span>
         }
-<span class="nc" id="L65">        return false;</span>
+<span class="fc" id="L83">        return false;</span>
     }
 
+    /**
+     * Displays the next achievement in the queue.
+     *
+     * @param next If the current achievement's time to display is up.
+     */
     public void displayAchievement(boolean next) {
-<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (displayQueue.isEmpty()) {</span>
-<span class="nc" id="L70">            currentAchievement = null;</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">        if (displayQueue.isEmpty()) {</span>
+<span class="nc" id="L93">            currentAchievement = null;</span>
         }
         else {
-<span class="nc" id="L73">            currentAchievement = displayQueue.remove(0);</span>
+<span class="fc" id="L96">            currentAchievement = displayQueue.remove(0);</span>
         }
 
-<span class="nc bnc" id="L76" title="All 4 branches missed.">        if (!displayQueue.isEmpty() &amp;&amp; currentAchievement == null) {</span>
-<span class="nc" id="L77">            currentAchievement = displayQueue.remove(0);</span>
+<span class="pc bpc" id="L99" title="3 of 4 branches missed.">        if (!displayQueue.isEmpty() &amp;&amp; currentAchievement == null) {</span>
+<span class="nc" id="L100">            currentAchievement = displayQueue.remove(0);</span>
         }
-<span class="nc bnc" id="L79" title="All 4 branches missed.">        else if (displayQueue.isEmpty() &amp;&amp; next) {</span>
-<span class="nc" id="L80">            currentAchievement = null;</span>
+<span class="pc bpc" id="L102" title="2 of 4 branches missed.">        else if (displayQueue.isEmpty() &amp;&amp; next) {</span>
+<span class="nc" id="L103">            currentAchievement = null;</span>
         }
+<span class="fc" id="L105">    }</span>
 
-<span class="nc" id="L83">    }</span>
-
+    /**
+     * Checks if any achievement has been achieved. Manages currently displayed achievements, and the queue for
+     * displaying them.
+     *
+     * @return The amount to change the score by if a new achievement is achieved and displayed.
+     */
     public float achievementDisplayTick() {
-        // if theres an achievement being displayed, tick though display time
-        // check if display time is finished, and if so, call nextevent
-<span class="nc bnc" id="L88" title="All 2 branches missed.">        if (currentAchievement != null) {</span>
-<span class="nc" id="L89">            float scoreChange = currentAchievement.getScoreChange();</span>
-<span class="nc bnc" id="L90" title="All 2 branches missed.">            if (!displayTimer.tick(Gdx.graphics.getDeltaTime() * 1000f)) {</span>
-<span class="nc" id="L91">                displayAchievement(true);</span>
-<span class="nc" id="L92">                displayTimer.reset();</span>
+        // If an achievement is currently being displayed, check the display timer isn't up, and return the amount
+        // to change the score.
+<span class="nc bnc" id="L116" title="All 2 branches missed.">        if (currentAchievement != null) {</span>
+<span class="nc" id="L117">            float scoreChange = currentAchievement.getScoreChange();</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">            if (!displayTimer.tick(Gdx.graphics.getDeltaTime() * 1000f)) {</span>
+<span class="nc" id="L119">                displayAchievement(true);</span>
+<span class="nc" id="L120">                displayTimer.reset();</span>
             }
-<span class="nc" id="L94">            return scoreChange;</span>
+<span class="nc" id="L122">            return scoreChange;</span>
         }
-<span class="nc" id="L96">        displayAchievement(false);</span>
-<span class="nc" id="L97">        checkChangedAchievements();</span>
-<span class="nc" id="L98">        return 0;</span>
+<span class="nc" id="L124">        displayAchievement(false);</span>
+<span class="nc" id="L125">        checkChangedAchievements();</span>
+<span class="nc" id="L126">        return 0;</span>
     }
 
+    /**
+     * Iterates over each achievement and checks if the status of achievement has changed.
+     */
     private void checkChangedAchievements() {
-<span class="nc bnc" id="L102" title="All 2 branches missed.">        for (Achievement achievement : achievements) {</span>
-<span class="nc bnc" id="L103" title="All 2 branches missed.">            if (achievement.checkAchieved(world)) {</span>
-<span class="nc" id="L104">                displayQueue.add(achievement);</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">        for (Achievement achievement : achievements) {</span>
+<span class="nc bnc" id="L134" title="All 2 branches missed.">            if (achievement.checkAchieved(world)) {</span>
+<span class="nc" id="L135">                displayQueue.add(achievement);</span>
             }
-<span class="nc" id="L106">        }</span>
-<span class="nc" id="L107">    }</span>
+<span class="nc" id="L137">        }</span>
+<span class="nc" id="L138">    }</span>
+
+  /**
+   * Sets current achievement to not null
+   * Exclusively for testing
+   */
+  public void testCurrentAchievement(){
+<span class="fc" id="L145">      currentAchievement = achievements.get(1);</span>
+<span class="fc" id="L146">    }</span>
 
     public void reset() {
-<span class="nc" id="L110">        currentAchievement = null;</span>
-<span class="nc" id="L111">        displayTimer.reset();</span>
-<span class="nc bnc" id="L112" title="All 2 branches missed.">        for (Achievement achievement : achievements) {</span>
-<span class="nc" id="L113">            achievement.reset();</span>
-<span class="nc" id="L114">        }</span>
-<span class="nc" id="L115">    }</span>
+<span class="fc" id="L149">        currentAchievement = null;</span>
+<span class="fc" id="L150">        displayTimer.reset();</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">        for (Achievement achievement : achievements) {</span>
+<span class="fc" id="L152">            achievement.reset();</span>
+<span class="fc" id="L153">        }</span>
+<span class="fc" id="L154">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

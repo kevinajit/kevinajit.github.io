@@ -3,6 +3,9 @@
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import io.github.unisim.world.World;
 
+/**
+ * Represents an award a user can win by fulfilling requirements.
+ */
 public class Achievement {
     public String name;
     public String description;
@@ -13,39 +16,65 @@ public class Achievement {
     private boolean achieved;
     AchievementRequirement requirement;
 
-<span class="nc" id="L16">    public Achievement(String name, String description, Image icon, float scoreFactor, AchievementRequirement requirement) {</span>
-<span class="nc" id="L17">        this.name = name;</span>
-<span class="nc" id="L18">        this.description = description;</span>
-<span class="nc" id="L19">        this.icon = icon;</span>
-<span class="nc" id="L20">        this.scoreFactor = scoreFactor;</span>
-<span class="nc" id="L21">        achieved = false;</span>
-<span class="nc" id="L22">        this.requirement = requirement;</span>
-<span class="nc" id="L23">    }</span>
+    /**
+     * Create a new achievement to add to the list of achievements a player can achieve throughout,
+     * and at the end of, the game.
+     *
+     * @param name The name of the achievement.
+     * @param description A description of how the achievement was achieved.
+     * @param icon The image to display alongside the achievement.
+     * @param scoreFactor The amount to change the score by when the achievement is achieved.
+     * @param requirement The requirement to achieve the achievement.
+     */
+<span class="fc" id="L29">    public Achievement(String name, String description, Image icon, float scoreFactor, AchievementRequirement requirement) {</span>
+<span class="fc" id="L30">        this.name = name;</span>
+<span class="fc" id="L31">        this.description = description;</span>
+<span class="fc" id="L32">        this.icon = icon;</span>
+<span class="fc" id="L33">        this.scoreFactor = scoreFactor;</span>
+<span class="fc" id="L34">        achieved = false;</span>
+<span class="fc" id="L35">        this.requirement = requirement;</span>
+<span class="fc" id="L36">    }</span>
 
+    /**
+     * Returns the amount to change score by. Sets scoreFactor to 0 so it can only affect score once.
+     *
+     * @return The amount to change score by.
+     */
     public float getScoreChange() {
-<span class="nc" id="L26">        float scoreChange = scoreFactor;</span>
-<span class="nc" id="L27">        scoreFactor = 0;</span>
-<span class="nc" id="L28">        return scoreChange;</span>
+<span class="fc" id="L44">        float scoreChange = scoreFactor;</span>
+<span class="fc" id="L45">        scoreFactor = 0;</span>
+<span class="fc" id="L46">        return scoreChange;</span>
     }
 
     /**
      * Checks if the achievement requirements have been met, and so the achievement has been achieved.
      *
      * @param world The world of the game.
-     * @return True if the achievement achieved, false otherwise.
+     * @return True if the achievement has been achieved, when before it had not, false otherwise.
      */
     public boolean checkAchieved(World world) {
-<span class="nc" id="L38">        boolean reqAchieved = requirement.checkAchieved(world);</span>
-<span class="nc bnc" id="L39" title="All 4 branches missed.">        if (!achieved &amp;&amp; reqAchieved) {</span>
-<span class="nc" id="L40">            achieved = true;</span>
-<span class="nc" id="L41">            return true;</span>
+<span class="fc" id="L56">        boolean reqAchieved = requirement.checkAchieved(world);</span>
+<span class="pc bpc" id="L57" title="2 of 4 branches missed.">        if (!achieved &amp;&amp; reqAchieved) {</span>
+<span class="nc" id="L58">            achieved = true;</span>
+<span class="nc" id="L59">            return true;</span>
         }
-<span class="nc" id="L43">        return false;</span>
+<span class="fc" id="L61">        return false;</span>
+    }
+
+  /**
+   * Sets achieved to true then returns true
+   * Exclusively for testing
+   *
+   * @return achieved, which will be true
+   */
+  public boolean testAchieved(){
+<span class="fc" id="L71">      boolean ret = achieved;</span>
+<span class="fc" id="L72">      achieved = true;</span>
+<span class="fc" id="L73">      return ret;</span>
     }
 
     public void reset() {
-<span class="nc" id="L47">        achieved = false;</span>
-        //does this ever actually change though
-<span class="nc" id="L49">    }</span>
+<span class="fc" id="L77">        achieved = false;</span>
+<span class="fc" id="L78">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

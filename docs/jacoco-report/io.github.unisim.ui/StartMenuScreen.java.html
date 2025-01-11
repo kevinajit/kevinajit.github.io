@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StartMenuScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">io.github.unisim.ui</a> &gt; <span class="el_source">StartMenuScreen.java</span></div><h1>StartMenuScreen.java</h1><pre class="source lang-java linenums">package io.github.unisim.ui;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.*;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import io.github.unisim.GameState;
+
+import java.util.Random;
 
 /**
  * The start menu screen which presents the player with the option to start the
@@ -20,87 +20,126 @@ public class StartMenuScreen implements Screen {
   private Stage stage;
   private Table table;
   private Skin skin;
+  private Label unisimLabel;
+  private Label usernameLabel;
   private TextButton playButton;
   private TextButton settingsButton;
-<span class="nc" id="L25">  private InputMultiplexer inputMultiplexer = new InputMultiplexer();</span>
+  private TextButton tutorialButton;
+<span class="nc" id="L28">  private InputMultiplexer inputMultiplexer = new InputMultiplexer();</span>
+
+<span class="nc" id="L30">  private Random random = new Random();</span>
 
   /**
    * Create a new StartMenuScreen and draw the initial UI layout.
    */
-<span class="nc" id="L30">  public StartMenuScreen() {</span>
-<span class="nc" id="L31">    stage = new Stage();</span>
-<span class="nc" id="L32">    table = new Table();</span>
-<span class="nc" id="L33">    skin = GameState.defaultSkin;</span>
+<span class="nc" id="L35">  public StartMenuScreen() {</span>
+<span class="nc" id="L36">    stage = new Stage();</span>
+<span class="nc" id="L37">    table = new Table();</span>
+<span class="nc" id="L38">    skin = GameState.defaultSkin;</span>
+
+    // Set new random username
+<span class="nc" id="L41">    String randomUsername = random.ints(97,123)</span>
+<span class="nc" id="L42">      .limit(5)</span>
+<span class="nc" id="L43">      .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)</span>
+<span class="nc" id="L44">      .toString();</span>
+<span class="nc" id="L45">    GameState.settings.setUsername(randomUsername);</span>
+
+    // UniSim title
+<span class="nc" id="L48">    unisimLabel = new Label(&quot;UniSim&quot;, skin);</span>
+<span class="nc" id="L49">    unisimLabel.setFontScale(2.5f);</span>
+
+    // Welcome message
+<span class="nc" id="L52">    usernameLabel = new Label(&quot;You're playing as: &quot; + GameState.settings.getUsername() + &quot;!&quot;, skin);</span>
+<span class="nc" id="L53">    usernameLabel.setFontScale(1f);</span>
 
     // Play button
-<span class="nc" id="L36">    playButton = new TextButton(&quot;Play&quot;, skin);</span>
-<span class="nc" id="L37">    playButton.addListener(new ClickListener() {</span>
+<span class="nc" id="L56">    playButton = new TextButton(&quot;Play&quot;, skin);</span>
+<span class="nc" id="L57">    playButton.addListener(new ClickListener() {</span>
       @Override
-      public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
+      public void clicked(InputEvent event, float x, float y) {
         // Switch to the game screen
-<span class="nc" id="L41">        GameState.currentScreen = GameState.gameScreen;</span>
-<span class="nc" id="L42">      }</span>
+<span class="nc" id="L61">        GameState.currentScreen = GameState.gameScreen;</span>
+<span class="nc" id="L62">        GameState.mainScreen = GameState.gameScreen;</span>
+<span class="nc" id="L63">      }</span>
     });
 
     // Settings button
-<span class="nc" id="L46">    settingsButton = new TextButton(&quot;Settings&quot;, skin);</span>
-<span class="nc" id="L47">    settingsButton.addListener(new ClickListener() {</span>
+<span class="nc" id="L67">    settingsButton = new TextButton(&quot;Settings&quot;, skin);</span>
+<span class="nc" id="L68">    settingsButton.addListener(new ClickListener() {</span>
       @Override
-      public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
+      public void clicked(InputEvent event, float x, float y) {
         // Switch to the settings screen
-<span class="nc" id="L51">        GameState.currentScreen = GameState.settingScreen;</span>
-<span class="nc" id="L52">      }</span>
+<span class="nc" id="L72">        GameState.currentScreen = GameState.settingScreen;</span>
+<span class="nc" id="L73">      }</span>
+    });
+
+<span class="nc" id="L76">    tutorialButton = new TextButton(&quot;Tutorial&quot;, skin);</span>
+<span class="nc" id="L77">    tutorialButton.setSize(200, 50);</span>
+<span class="nc" id="L78">    tutorialButton.addListener(new ClickListener() {</span>
+      @Override
+      public void clicked(InputEvent event, float x, float y) {
+<span class="nc" id="L81">        GameState.currentScreen = GameState.tutorialScreen;</span>
+<span class="nc" id="L82">      }</span>
     });
 
     // Add UI elements to the stage
-<span class="nc" id="L56">    table.setFillParent(true);</span>
-<span class="nc" id="L57">    table.center().center();</span>
-<span class="nc" id="L58">    table.pad(100, 100, 100, 100);</span>
-<span class="nc" id="L59">    table.add(playButton).center().width(250).height(100).padBottom(10);</span>
-<span class="nc" id="L60">    table.row();</span>
-<span class="nc" id="L61">    table.add(settingsButton).center().width(250).height(67);</span>
-<span class="nc" id="L62">    stage.addActor(table);</span>
+<span class="nc" id="L86">    table.setFillParent(true);</span>
+<span class="nc" id="L87">    table.center().center();</span>
+<span class="nc" id="L88">    table.pad(100, 100, 100, 100);</span>
+<span class="nc" id="L89">    table.add(unisimLabel).expandX().align(Align.center).padBottom(20);</span>
+<span class="nc" id="L90">    table.row();</span>
+<span class="nc" id="L91">    table.add(usernameLabel).expandX().align(Align.center).padBottom(20);</span>
+<span class="nc" id="L92">    table.row();</span>
+<span class="nc" id="L93">    table.add(playButton).center().width(250).height(70).padBottom(8);</span>
+<span class="nc" id="L94">    table.row();</span>
+<span class="nc" id="L95">    table.add(settingsButton).center().width(250).height(40).padBottom(8);</span>
+<span class="nc" id="L96">    table.row();</span>
+<span class="nc" id="L97">    table.add(tutorialButton).center().width(250).height(40).padBottom(8);</span>
+<span class="nc" id="L98">    stage.addActor(table);</span>
 
-<span class="nc" id="L64">    inputMultiplexer.addProcessor(GameState.fullscreenInputProcessor);</span>
-<span class="nc" id="L65">    inputMultiplexer.addProcessor(stage);</span>
-<span class="nc" id="L66">  }</span>
+<span class="nc" id="L100">    inputMultiplexer.addProcessor(GameState.fullscreenInputProcessor);</span>
+<span class="nc" id="L101">    inputMultiplexer.addProcessor(stage);</span>
+<span class="nc" id="L102">  }</span>
 
   @Override
   public void show() {
-<span class="nc" id="L70">  }</span>
+<span class="nc" id="L106">  }</span>
 
   @Override
   public void render(float delta) {
     // Clear the screen
-<span class="nc" id="L75">    ScreenUtils.clear(GameState.UISecondaryColour);</span>
+<span class="nc" id="L111">    ScreenUtils.clear(GameState.UISecondaryColour);</span>
+
+    // Set welcome label
+<span class="nc" id="L114">    usernameLabel.setText(&quot;You're playing as: &quot; + GameState.settings.getUsername());</span>
 
     // Draw the stage containing buttons
-<span class="nc" id="L78">    stage.act(delta);</span>
-<span class="nc" id="L79">    stage.draw();</span>
-<span class="nc" id="L80">  }</span>
+<span class="nc" id="L117">    stage.act(delta);</span>
+<span class="nc" id="L118">    stage.draw();</span>
+<span class="nc" id="L119">  }</span>
 
   @Override
   public void resize(int width, int height) {
-<span class="nc" id="L84">    stage.getViewport().update(width, height, true);</span>
-<span class="nc" id="L85">  }</span>
+<span class="nc" id="L123">    stage.getViewport().update(width, height, true);</span>
+<span class="nc" id="L124">  }</span>
 
   @Override
   public void pause() {
-<span class="nc" id="L89">  }</span>
+<span class="nc" id="L128">  }</span>
 
   @Override
   public void resume() {
-<span class="nc" id="L93">    Gdx.input.setInputProcessor(inputMultiplexer);</span>
-<span class="nc" id="L94">  }</span>
+<span class="nc" id="L132">    Gdx.input.setInputProcessor(inputMultiplexer);</span>
+<span class="nc" id="L133">  }</span>
 
   @Override
   public void hide() {
-<span class="nc" id="L98">  }</span>
+<span class="nc" id="L137">  }</span>
 
   @Override
   public void dispose() {
-<span class="nc" id="L102">    stage.dispose();</span>
-<span class="nc" id="L103">    skin.dispose();</span>
-<span class="nc" id="L104">  }</span>
+<span class="nc" id="L141">    stage.dispose();</span>
+<span class="nc" id="L142">    skin.dispose();</span>
+<span class="nc" id="L143">  }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

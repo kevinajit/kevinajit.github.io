@@ -65,80 +65,70 @@ public class BuildingMenu {
         BuildingType.LEARNING,
         &quot;Library&quot;
     ));
-//    buildings.add(new Building(
-//        new Texture(Gdx.files.internal(&quot;buildings/basketballCourt.png&quot;)),
-//        0.0025f,
-//        new Vector2(1f, -2.4f),
-//        new Point(),
-//        new Point(6, 9),
-//        false,
-//        BuildingType.RECREATION,
-//        &quot;Basketball Court&quot;
-//    ));
-<span class="nc" id="L78">    buildings.add(new Building(</span>
-<span class="nc" id="L79">        new Texture(Gdx.files.internal(&quot;buildings/stadium.png&quot;)),</span>
+<span class="nc" id="L68">    buildings.add(new Building(</span>
+<span class="nc" id="L69">        new Texture(Gdx.files.internal(&quot;buildings/stadium.png&quot;)),</span>
             0.0020f,
             new Vector2(0f, 0f),
             new Point(),
             new Point(8,12),
-<span class="nc" id="L84">            false,</span>
+<span class="nc" id="L74">            false,</span>
             BuildingType.RECREATION,
             &quot;Stadium&quot;
     ));
-<span class="nc" id="L88">    buildings.add(new Building(</span>
-<span class="nc" id="L89">        new Texture(Gdx.files.internal(&quot;buildings/accommodation.png&quot;)),</span>
+<span class="nc" id="L78">    buildings.add(new Building(</span>
+<span class="nc" id="L79">        new Texture(Gdx.files.internal(&quot;buildings/accommodation.png&quot;)),</span>
         0.0025f,
         new Vector2(1.4f, -2.8f),
         new Point(),
         new Point(11, 11),
-<span class="nc" id="L94">        false,</span>
+<span class="nc" id="L84">        false,</span>
         BuildingType.ACCOMMODATION,
         &quot;Student Accommodation&quot;
     ));
-<span class="nc" id="L98">    buildings.add(new Building(</span>
-<span class="nc" id="L99">        new Texture(Gdx.files.internal(&quot;buildings/pharmacy.png&quot;)),</span>
+<span class="nc" id="L88">    buildings.add(new Building(</span>
+<span class="nc" id="L89">        new Texture(Gdx.files.internal(&quot;buildings/pharmacy.png&quot;)),</span>
         0.0018f,
         new Vector2(1.3f, -0.5f),
         new Point(),
         new Point(4,5),
-<span class="nc" id="L104">        false,</span>
+<span class="nc" id="L94">        false,</span>
         BuildingType.HEALTH,
         &quot;Pharmacy&quot;
     ));
 
-<span class="nc" id="L109">    table = new Table();</span>
+<span class="nc" id="L99">    table = new Table();</span>
     // Add buildings to the table
-<span class="nc bnc" id="L111" title="All 2 branches missed.">    for (int i = 0; i &lt; buildings.size(); i++) {</span>
-<span class="nc" id="L112">      buildingImages.add(new Image(buildings.get(i).texture));</span>
-<span class="nc" id="L113">      final int buildingIndex = i;</span>
-<span class="nc" id="L114">      buildingImages.get(i).addListener(new ClickListener() {</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">    for (int i = 0; i &lt; buildings.size(); i++) {</span>
+<span class="nc" id="L102">      buildingImages.add(new Image(buildings.get(i).texture));</span>
+<span class="nc" id="L103">      final int buildingIndex = i;</span>
+<span class="nc" id="L104">      buildingImages.get(i).addListener(new ClickListener() {</span>
         @Override
         public void clicked(InputEvent e, float x, float y) {
-<span class="nc bnc" id="L117" title="All 4 branches missed.">          if (world.selectedBuilding == buildings.get(buildingIndex) || GameState.paused) {</span>
-<span class="nc" id="L118">            world.selectedBuilding = null;</span>
+<span class="nc bnc" id="L107" title="All 4 branches missed.">          if (world.selectedBuilding == buildings.get(buildingIndex) || GameState.paused) {</span>
+<span class="nc" id="L108">            world.selectedBuilding = null;</span>
           }
           else {
-<span class="nc" id="L121">            world.selectedBuilding = buildings.get(buildingIndex);</span>
-<span class="nc" id="L122">            buildingInfoLabel.setText(world.selectedBuilding.name + &quot; - Press 'R' to rotate&quot;);</span>
-<span class="nc bnc" id="L123" title="All 2 branches missed.">            if (world.selectedBuilding.flipped) {</span>
-<span class="nc" id="L124">              world.selectedBuilding.flipped = false;</span>
-<span class="nc" id="L125">              int temp = world.selectedBuilding.size.x;</span>
-<span class="nc" id="L126">              world.selectedBuilding.size.x = world.selectedBuilding.size.y;</span>
-<span class="nc" id="L127">              world.selectedBuilding.size.y = temp;</span>
-<span class="nc" id="L128">              world.selectedBuildingUpdated = true;</span>
+<span class="nc" id="L111">            world.selectedBuilding = buildings.get(buildingIndex);</span>
+<span class="nc" id="L112">            buildingInfoLabel.setText(world.selectedBuilding.name + &quot; - Press 'R' to rotate&quot;);</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">            if (world.selectedBuilding.flipped) {</span>
+<span class="nc" id="L114">              world.selectedBuilding.flipped = false;</span>
+<span class="nc" id="L115">              int temp = world.selectedBuilding.size.x;</span>
+<span class="nc" id="L116">              world.selectedBuilding.size.x = world.selectedBuilding.size.y;</span>
+<span class="nc" id="L117">              world.selectedBuilding.size.y = temp;</span>
+<span class="nc" id="L118">              world.selectedBuildingUpdated = true;</span>
             }
           }
-<span class="nc" id="L131">        }</span>
+<span class="nc" id="L121">        }</span>
       });
-<span class="nc" id="L133">      table.add(buildingImages.get(i));</span>
+<span class="nc" id="L123">      table.add(buildingImages.get(i));</span>
     }
 
-<span class="nc" id="L136">    buildingInfoTable.add(buildingInfoLabel).expandX().align(Align.center);</span>
+<span class="nc" id="L126">    buildingInfoTable.add(buildingInfoLabel).expandX().align(Align.center);</span>
 
-<span class="nc" id="L138">    stage.addActor(bar);</span>
-<span class="nc" id="L139">    stage.addActor(table);</span>
-<span class="nc" id="L140">    stage.addActor(buildingInfoTable);</span>
-<span class="nc" id="L141">  }</span>
+<span class="nc" id="L128">    stage.addActor(bar);</span>
+<span class="nc" id="L129">    stage.addActor(table);</span>
+<span class="nc" id="L130">    stage.addActor(buildingInfoTable);</span>
+<span class="nc" id="L131">  }</span>
 
   /**
    * Called when the window is resized, scales the building menu images with the window size.
@@ -148,41 +138,41 @@ public class BuildingMenu {
    */
   @SuppressWarnings(&quot;unchecked&quot;)
   public void resize(int width, int height) {
-<span class="nc" id="L151">    table.setBounds(0, 0, width, height * 0.1f);</span>
-<span class="nc" id="L152">    bar.setBounds(0, 0, width, height * 0.1f);</span>
-<span class="nc" id="L153">    buildingInfoTable.setBounds(0, height * 0.1f, width, height * 0.025f);</span>
+<span class="nc" id="L141">    table.setBounds(0, 0, width, height * 0.1f);</span>
+<span class="nc" id="L142">    bar.setBounds(0, 0, width, height * 0.1f);</span>
+<span class="nc" id="L143">    buildingInfoTable.setBounds(0, height * 0.1f, width, height * 0.025f);</span>
 
     // we must perform an unchecked type conversion here
     // this is acceptable as we know our table only contains instances of Actors
-<span class="nc bnc" id="L157" title="All 2 branches missed.">    for (Cell&lt;Actor&gt; cell : table.getCells()) {</span>
-<span class="nc" id="L158">      Image buildingImage = (Image) (cell.getActor());</span>
-<span class="nc" id="L159">      Vector2 textureSize = new Vector2(buildingImage.getWidth(), buildingImage.getHeight());</span>
-<span class="nc" id="L160">      cell.width(</span>
-<span class="nc bnc" id="L161" title="All 2 branches missed.">          height * 0.1f * (textureSize.x &lt; textureSize.y ? textureSize.x / textureSize.y : 1)</span>
-<span class="nc" id="L162">      ).height(</span>
-<span class="nc bnc" id="L163" title="All 2 branches missed.">          height * 0.1f * (textureSize.y &lt; textureSize.x ? textureSize.y / textureSize.x : 1)</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">    for (Cell&lt;Actor&gt; cell : table.getCells()) {</span>
+<span class="nc" id="L148">      Image buildingImage = (Image) (cell.getActor());</span>
+<span class="nc" id="L149">      Vector2 textureSize = new Vector2(buildingImage.getWidth(), buildingImage.getHeight());</span>
+<span class="nc" id="L150">      cell.width(</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">          height * 0.1f * (textureSize.x &lt; textureSize.y ? textureSize.x / textureSize.y : 1)</span>
+<span class="nc" id="L152">      ).height(</span>
+<span class="nc bnc" id="L153" title="All 2 branches missed.">          height * 0.1f * (textureSize.y &lt; textureSize.x ? textureSize.y / textureSize.x : 1)</span>
       );
-<span class="nc" id="L165">    }</span>
+<span class="nc" id="L155">    }</span>
 
-<span class="nc" id="L167">    buildingInfoLabel.setFontScale(height * 0.0015f);</span>
-<span class="nc" id="L168">  }</span>
+<span class="nc" id="L157">    buildingInfoLabel.setFontScale(height * 0.0015f);</span>
+<span class="nc" id="L158">  }</span>
 
   /**
    * Called when the building menu needs to be redrawn with new values in the labels.
    */
   public void update() {
-<span class="nc bnc" id="L174" title="All 2 branches missed.">    if (GameState.gameOver) {</span>
-<span class="nc" id="L175">      buildingInfoLabel.setText(&quot;-- Game Over! --&quot;);</span>
-<span class="nc bnc" id="L176" title="All 2 branches missed.">    }else if (GameState.paused) {</span>
-<span class="nc" id="L177">        buildingInfoLabel.setText(&quot;-- Game paused --&quot;);</span>
-<span class="nc" id="L178">        world.selectedBuilding = null;</span>
-<span class="nc bnc" id="L179" title="All 2 branches missed.">    }else if (world.selectedBuilding == null) {</span>
-<span class="nc" id="L180">      buildingInfoLabel.setText(&quot;&quot;);</span>
+<span class="nc bnc" id="L164" title="All 2 branches missed.">    if (GameState.gameOver) {</span>
+<span class="nc" id="L165">      buildingInfoLabel.setText(&quot;-- Game Over! --&quot;);</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">    }else if (GameState.paused) {</span>
+<span class="nc" id="L167">        buildingInfoLabel.setText(&quot;-- Game paused --&quot;);</span>
+<span class="nc" id="L168">        world.selectedBuilding = null;</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">    }else if (world.selectedBuilding == null) {</span>
+<span class="nc" id="L170">      buildingInfoLabel.setText(&quot;&quot;);</span>
     }
-<span class="nc" id="L182">  }</span>
+<span class="nc" id="L172">  }</span>
 
   public void reset() {
-<span class="nc" id="L185">    buildingInfoLabel.setText(&quot;&quot;);</span>
-<span class="nc" id="L186">  }</span>
+<span class="nc" id="L175">    buildingInfoLabel.setText(&quot;&quot;);</span>
+<span class="nc" id="L176">  }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -17,9 +17,6 @@ public class Event {
     public String description;
     public Image icon;
 
-    // The initial score factor to change score by, and the value by which a chosen
-    // building type will increase the score by for new placements
-
     /**The initial factor to change score by.*/
     private float scoreFactor;
     private BuildingType buildingType;
@@ -30,13 +27,13 @@ public class Event {
     // Fields for having score decrement per certain time increment - scoreFactor
     // will be used as the value to change by
     private float tickPeriod;
-<span class="nc" id="L33">    private float lastTickPeriod = 0;</span>
+<span class="fc" id="L30">    private float lastTickPeriod = 0;</span>
     private boolean isTickEvent;
-<span class="nc" id="L35">    public boolean finished = false;</span>
+<span class="fc" id="L32">    public boolean finished = false;</span>
 
     // All events last 30 seconds
-<span class="nc" id="L38">    float initialTime = 30_000f;</span>
-<span class="nc" id="L39">    private Timer timer = new Timer(initialTime);</span>
+<span class="fc" id="L35">    float initialTime = 30_000f;</span>
+<span class="fc" id="L36">    private Timer timer = new Timer(initialTime);</span>
 
     /**A non-ticking event.
      *
@@ -50,16 +47,16 @@ public class Event {
      * @param buildingType The type of building that must be placed.
      */
     public Event(String name, String description, Image icon, int scoreFactor, int buildingTypeScoreIncrease,
-<span class="nc" id="L53">                 BuildingType buildingType) {</span>
-<span class="nc" id="L54">        this.name = name;</span>
-<span class="nc" id="L55">        this.description = description;</span>
-<span class="nc" id="L56">        this.icon = icon;</span>
-<span class="nc" id="L57">        this.scoreFactor = scoreFactor;</span>
-<span class="nc" id="L58">        this.buildingType = buildingType;</span>
-<span class="nc" id="L59">        this.buildingTypeScoreIncrease = buildingTypeScoreIncrease;</span>
-<span class="nc" id="L60">        scoreIncreased = 0;</span>
-<span class="nc" id="L61">        this.isTickEvent = false;</span>
-<span class="nc" id="L62">    }</span>
+<span class="fc" id="L50">                 BuildingType buildingType) {</span>
+<span class="fc" id="L51">        this.name = name;</span>
+<span class="fc" id="L52">        this.description = description;</span>
+<span class="fc" id="L53">        this.icon = icon;</span>
+<span class="fc" id="L54">        this.scoreFactor = scoreFactor;</span>
+<span class="fc" id="L55">        this.buildingType = buildingType;</span>
+<span class="fc" id="L56">        this.buildingTypeScoreIncrease = buildingTypeScoreIncrease;</span>
+<span class="fc" id="L57">        scoreIncreased = 0;</span>
+<span class="fc" id="L58">        this.isTickEvent = false;</span>
+<span class="fc" id="L59">    }</span>
 
     /**A ticking event - score changes incrementally over time.
      *
@@ -69,57 +66,52 @@ public class Event {
      * @param scoreFactor The amount score changes by every tickPeriod for duration of the event.
      * @param tickPeriod The amount of time over which the score changes by scoreFactor
      */
-<span class="nc" id="L72">    public Event(String name, String description, Image icon, int scoreFactor, float tickPeriod) {</span>
-<span class="nc" id="L73">        this.name = name;</span>
-<span class="nc" id="L74">        this.description = description;</span>
-<span class="nc" id="L75">        this.icon = icon;</span>
-<span class="nc" id="L76">        this.scoreFactor = scoreFactor;</span>
-<span class="nc" id="L77">        this.tickPeriod = tickPeriod;</span>
-<span class="nc" id="L78">        this.isTickEvent = true;</span>
-<span class="nc" id="L79">    }</span>
+<span class="fc" id="L69">    public Event(String name, String description, Image icon, int scoreFactor, float tickPeriod) {</span>
+<span class="fc" id="L70">        this.name = name;</span>
+<span class="fc" id="L71">        this.description = description;</span>
+<span class="fc" id="L72">        this.icon = icon;</span>
+<span class="fc" id="L73">        this.scoreFactor = scoreFactor;</span>
+<span class="fc" id="L74">        this.tickPeriod = tickPeriod;</span>
+<span class="fc" id="L75">        this.isTickEvent = true;</span>
+<span class="fc" id="L76">        buildingType = null;</span>
+<span class="fc" id="L77">    }</span>
 
     /**The timer of the event.
      * &lt;p&gt;Handles the ui of the timer of the event, and the score changing each tick.&lt;/p&gt;
-     * @return The amount the score should change by.*/
+     * @return The amount the score should change by each tick.*/
     public float tick() {
-<span class="nc" id="L85">        boolean changeScore = false;</span>
-<span class="nc" id="L86">        float scoreChange = scoreFactor;</span>
+<span class="fc" id="L83">        boolean changeScore = false;</span>
+<span class="fc" id="L84">        float scoreChange = scoreFactor;</span>
 
-<span class="nc bnc" id="L88" title="All 2 branches missed.">        finished = !timer.tick(Gdx.graphics.getDeltaTime() * 1000f);</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        finished = !timer.tick(Gdx.graphics.getDeltaTime() * 1000f);</span>
         // If a tick event is in play, adjust the timer and return how much the score needs to change by.
-<span class="nc bnc" id="L90" title="All 2 branches missed.">        if (isTickEvent) {</span>
-<span class="nc" id="L91">            float currentTimeInterval = (timer.getTimeAsFloat() % tickPeriod);</span>
-<span class="nc bnc" id="L92" title="All 2 branches missed.">            if (currentTimeInterval &gt; lastTickPeriod) { changeScore = true; }</span>
-<span class="nc" id="L93">            lastTickPeriod = currentTimeInterval;</span>
-<span class="nc" id="L94">        }</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">        if (isTickEvent) {</span>
+<span class="fc" id="L89">            float currentTimeInterval = (timer.getTimeAsFloat() % tickPeriod);</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">            if (currentTimeInterval &gt; lastTickPeriod) { changeScore = true; }</span>
+<span class="fc" id="L91">            lastTickPeriod = currentTimeInterval;</span>
+<span class="fc" id="L92">        }</span>
         else {
             // Initial score adjustment at the start of the event.
-<span class="nc bnc" id="L97" title="All 2 branches missed.">            if (scoreFactor != 0) { changeScore = true; }</span>
-            //else { scoreFactor = buildingTypeScoreIncrease; }
-<span class="nc" id="L99">            scoreFactor = 0;</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">            if (scoreFactor != 0) { changeScore = true; }</span>
+<span class="fc" id="L96">            scoreFactor = 0;</span>
         }
-<span class="nc bnc" id="L101" title="All 2 branches missed.">        if (finished) {</span>
-<span class="nc" id="L102">            timer.reset();</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        if (finished) {</span>
+<span class="fc" id="L99">            timer.reset();</span>
         }
 
-<span class="nc bnc" id="L105" title="All 2 branches missed.">        return changeScore ? scoreChange : 0;</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        return changeScore ? scoreChange : 0;</span>
     }
 
     public String getRemainingTime(){
-<span class="nc" id="L109">        return timer.getRemainingTime();</span>
+<span class="fc" id="L106">        return timer.getRemainingTime();</span>
     }
 
     public BuildingType getBuildingType() {
-<span class="nc bnc" id="L113" title="All 2 branches missed.">        if (!isTickEvent) {</span>
-<span class="nc" id="L114">            return buildingType;</span>
-        }
-        else {
-<span class="nc" id="L117">            return null;</span>
-        }
+<span class="fc" id="L110">        return buildingType;</span>
     }
 
-    public float getScoreFactor() {
-<span class="nc" id="L122">        return scoreFactor;</span>
+    public boolean isTickEvent() {
+<span class="fc" id="L114">        return isTickEvent;</span>
     }
 
     /**
@@ -130,23 +122,27 @@ public class Event {
      * @return The score gained.
      */
     public float getAdjustment() {
-<span class="nc" id="L133">        float time = timer.getTimeAsFloat() / initialTime;</span>
-<span class="nc" id="L134">        float scoreGain = buildingTypeScoreIncrease * time * 0.8f;</span>
-<span class="nc bnc" id="L135" title="All 2 branches missed.">        if (scoreIncreased + scoreGain &gt;= buildingTypeScoreIncrease) {</span>
-<span class="nc" id="L136">            scoreGain = buildingTypeScoreIncrease - scoreIncreased;</span>
+<span class="fc" id="L125">        float time = timer.getTimeAsFloat() / initialTime;</span>
+<span class="fc" id="L126">        float scoreGain = buildingTypeScoreIncrease * time * 0.7f;</span>
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">        if (scoreIncreased + scoreGain &gt;= buildingTypeScoreIncrease) {</span>
+<span class="nc" id="L128">            scoreGain = buildingTypeScoreIncrease - scoreIncreased;</span>
         }
-<span class="nc" id="L138">        scoreIncreased += scoreGain;</span>
-<span class="nc" id="L139">        return scoreGain;</span>
-    }
-
-    public boolean isTickEvent() {
-<span class="nc" id="L143">        return isTickEvent;</span>
+<span class="fc" id="L130">        scoreIncreased += scoreGain;</span>
+<span class="fc" id="L131">        return scoreGain;</span>
     }
 
     public void reset() {
-<span class="nc" id="L147">        timer.reset();</span>
-<span class="nc" id="L148">        finished = false;</span>
-<span class="nc" id="L149">        lastTickPeriod = 0;</span>
-<span class="nc" id="L150">    }</span>
+<span class="fc" id="L135">        timer.reset();</span>
+<span class="fc" id="L136">        finished = false;</span>
+<span class="fc" id="L137">        lastTickPeriod = 0;</span>
+<span class="fc" id="L138">    }</span>
+
+    /**
+    * Increments timer by 10 seconds
+    * Used exclusively to tick time in headless test environment
+    */
+    public void testTimerTick(float timeChange){
+<span class="fc" id="L145">      timer.tick(timeChange);</span>
+<span class="fc" id="L146">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

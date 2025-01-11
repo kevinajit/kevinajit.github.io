@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TutorialScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">io.github.unisim.ui</a> &gt; <span class="el_source">TutorialScreen.java</span></div><h1>TutorialScreen.java</h1><pre class="source lang-java linenums">package io.github.unisim.ui;
+
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.ScreenUtils;
+import io.github.unisim.GameState;
+
+public class TutorialScreen implements Screen {
+  private Stage stage;
+  private Table table;
+  private Skin skin;
+  private Label titleLabel;
+  private Label descriptionLabel;
+  private TextButton mMenuButton;
+  private TextButton settingsButton;
+<span class="nc" id="L26">  private InputMultiplexer inputMultiplexer = new InputMultiplexer();</span>
+
+<span class="nc" id="L28">  public TutorialScreen() {</span>
+<span class="nc" id="L29">    stage = new Stage();</span>
+<span class="nc" id="L30">    table = new Table();</span>
+<span class="nc" id="L31">    skin = GameState.defaultSkin;</span>
+
+<span class="nc" id="L33">    String descriptionText = &quot;  - Rotate buildings when placing them by pressing 'R'\n&quot;</span>
+                           + &quot;  - Watch out for events happening through the game\n&quot;
+                           + &quot;  - Change your username by going into settings\n&quot;
+                           + &quot;  - Keep buildings close together to increase satisfaction - don't make your students walk too far!\n&quot;
+                           + &quot;  - Place the same number of different types of buildings\n&quot;
+                           + &quot;  - Remember you can press pause at any time! &quot;;
+
+    // Title label
+<span class="nc" id="L41">    titleLabel = new Label(&quot;Playing tips!&quot;, skin);</span>
+<span class="nc" id="L42">    titleLabel.setFontScale(1.5f);</span>
+
+    // Description label
+<span class="nc" id="L45">    descriptionLabel = new Label(descriptionText, skin);</span>
+<span class="nc" id="L46">    descriptionLabel.setWrap(true);</span>
+
+    // Main menu button
+<span class="nc" id="L49">    mMenuButton = new TextButton(&quot;Main menu&quot;, skin);</span>
+<span class="nc" id="L50">    mMenuButton.setPosition(150, 80);</span>
+<span class="nc" id="L51">    mMenuButton.setSize(100,50);</span>
+<span class="nc" id="L52">    mMenuButton.addListener(new ClickListener() {</span>
+      @Override
+      public void clicked(InputEvent event, float x, float y) {
+<span class="nc" id="L55">        GameState.currentScreen = GameState.startScreen;</span>
+<span class="nc" id="L56">      }</span>
+    });
+
+    // Settings button
+<span class="nc" id="L60">    settingsButton = new TextButton(&quot;Settings&quot;, skin);</span>
+<span class="nc" id="L61">    settingsButton.setPosition(150,80);</span>
+<span class="nc" id="L62">    settingsButton.setSize(100,50);</span>
+<span class="nc" id="L63">    settingsButton.addListener(new ClickListener() {</span>
+      @Override
+      public void clicked(InputEvent event, float x, float y) {
+<span class="nc" id="L66">        GameState.currentScreen = GameState.settingScreen;</span>
+<span class="nc" id="L67">      }</span>
+    });
+
+<span class="nc" id="L70">    Table buttonTable = new Table();</span>
+<span class="nc" id="L71">    buttonTable.add(mMenuButton).width(150).height(40).padRight(8);</span>
+<span class="nc" id="L72">    buttonTable.add(settingsButton).width(150).height(40);</span>
+
+<span class="nc" id="L74">    table.setFillParent(true);</span>
+<span class="nc" id="L75">    table.center().center();</span>
+<span class="nc" id="L76">    table.pad(100,100,100,100);</span>
+<span class="nc" id="L77">    table.add(titleLabel).expandX().align(Align.center).padBottom(8);</span>
+<span class="nc" id="L78">    table.row();</span>
+<span class="nc" id="L79">    table.add(descriptionLabel).center().width(350).height(180).padBottom(8);</span>
+<span class="nc" id="L80">    table.row();</span>
+<span class="nc" id="L81">    table.add(buttonTable).expandX().center().width(350).height(40);</span>
+    //table.setDebug(true);
+<span class="nc" id="L83">    stage.addActor(table);</span>
+
+<span class="nc" id="L85">    inputMultiplexer.addProcessor(GameState.fullscreenInputProcessor);</span>
+<span class="nc" id="L86">    inputMultiplexer.addProcessor(stage);</span>
+<span class="nc" id="L87">  }</span>
+
+  @Override
+<span class="nc" id="L90">  public void show() {}</span>
+
+  @Override
+  public void render(float delta) {
+<span class="nc" id="L94">    ScreenUtils.clear(GameState.UISecondaryColour);</span>
+
+<span class="nc bnc" id="L96" title="All 2 branches missed.">    mMenuButton.setVisible(GameState.mainScreen == GameState.startScreen);</span>
+
+<span class="nc" id="L98">    stage.act(delta);</span>
+<span class="nc" id="L99">    stage.draw();</span>
+<span class="nc" id="L100">  }</span>
+
+  @Override
+  public void resize(int width, int height) {
+<span class="nc" id="L104">    stage.getViewport().update(width, height, true);</span>
+<span class="nc" id="L105">  }</span>
+
+  @Override
+<span class="nc" id="L108">  public void pause() {}</span>
+
+  @Override
+  public void resume() {
+<span class="nc" id="L112">    Gdx.input.setInputProcessor(inputMultiplexer);</span>
+<span class="nc" id="L113">  }</span>
+
+  @Override
+<span class="nc" id="L116">  public void hide() {}</span>
+
+  @Override
+  public void dispose() {
+<span class="nc" id="L120">    stage.dispose();</span>
+<span class="nc" id="L121">    skin.dispose();</span>
+<span class="nc" id="L122">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
